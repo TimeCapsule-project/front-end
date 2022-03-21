@@ -7,10 +7,13 @@ import Intro from './Intro';
 
 export default function Routes() {
   const Stack = createNativeStackNavigator();
+  const screenOptions = {
+    headerShown: false,
+  };
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Intro">
+      <Stack.Navigator initialRouteName="Intro" screenOptions={screenOptions}>
         <Stack.Screen name="Intro" component={Intro} />
         <Stack.Screen name="Home" component={Home} />
       </Stack.Navigator>

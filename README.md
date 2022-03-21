@@ -1,8 +1,9 @@
 # front-end
 Time Capsule Project, React Native Front-end
 
-# Using
+# Enviroment
+Node.js 16.13.1 (lts/gallium)
 
-Node.js 14.2.0
+# Using
 React 17
 Typescript 4
