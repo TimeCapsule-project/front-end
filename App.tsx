@@ -1,16 +1,19 @@
 import React, { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 
-const App = () => {
+import { globalStyles } from './src/assets/styles/global';
+import Routes from './src/pages/routes';
+
+const App: React.FC<{}> = () => {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
 
   return (
-    <View>
-      <Text>HOME</Text>
-    </View>
+    <SafeAreaView style={globalStyles.container}>
+      <Routes />
+    </SafeAreaView>
   );
 };
 
