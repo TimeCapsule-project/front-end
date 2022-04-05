@@ -1,14 +1,13 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import TabMenuHeader from './TabMenuHeader';
-import TabMenuList from './TabMenuList';
-import { TabMenuHeaderItem } from './TabMenuHeader/Item';
-import { TabMenuListItem } from './TabMenuList/Item';
+import { TabMenuHeaderItemInfo } from './TabMenuHeader/Item';
 import { orange } from '../../assets/styles/colors';
 
 type PropsType = {
-  headerItems: TabMenuHeaderItem[];
-  listItems: TabMenuListItem[];
+  headerItems: TabMenuHeaderItemInfo[];
+  viewList: React.ReactNode[];
+  defaultTab?: number;
 };
 
 const styles = StyleSheet.create({
@@ -22,17 +21,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: orange,
   },
+  nullBox: { flex: 1 },
   spacingBox: { height: 25 },
 });
 
-const TabMenu: React.FC<PropsType> = ({ headerItems, listItems }) => {
+function TabMenu({ headerItems, viewList, defaultTab }: PropsType) {
+  const [currentTab, setTab] = useState<number>(defaultTab || 0);
+  const ViewComponent = useMemo(
+    () => viewList[currentTab] || <View style={styles.nullBox} />,
+    [currentTab, viewList],
+  );
+
   return (
     <View style={styles.container}>
-      <TabMenuHeader items={headerItems} />
+      <TabMenuHeader
+        setTab={setTab}
+        items={headerItems}
+        currentTab={currentTab}
+      />
       <View style={styles.spacingBox} />
-      <TabMenuList items={listItems} />
+      {ViewComponent}
     </View>
   );
-};
+}
 
 export default TabMenu;

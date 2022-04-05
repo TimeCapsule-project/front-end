@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Header: React.FC<{}> = () => {
+function Header() {
   return (
     <View style={styles.container}>
       <View style={styles.leftBox}>
@@ -48,6 +48,6 @@ const Header: React.FC<{}> = () => {
       </View>
     </View>
   );
-};
+}
 
 export default Header;

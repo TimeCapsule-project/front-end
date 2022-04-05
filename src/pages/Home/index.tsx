@@ -1,16 +1,26 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { sandGray } from '../../assets/styles/colors';
-import { defaultStyles } from '../../assets/styles/default';
 import Header from '../../components/Header';
 import TabMenu from '../../components/TabMenu';
-import { TabMenuHeaderItem } from '../../components/TabMenu/TabMenuHeader/Item';
-import { TabMenuListItem } from '../../components/TabMenu/TabMenuList/Item';
+
+import ListView from '../../components/ListView';
+import tabHeaderItems from '../../constants/tabHeaderItems';
+import CapsuleDetail from '../../components/CapsuleDetail';
 
 const MOCK_ITEM = {
   date: '2022.03.27 11:30',
   dDayText: 'D-12',
   fromUserName: '돌아온 프로도',
+  location: true,
+  isActiveAlarm: true,
+  isShareAvailable: true,
+};
+
+const MOCK_ITEM2 = {
+  date: '2022.03.27 11:30',
+  dDayText: 'D-Day',
+  fromUserName: '집나간 프로도',
   location: true,
   isActiveAlarm: true,
   isShareAvailable: true,
@@ -29,33 +39,33 @@ function Home(props: { navigation: any }) {
     [props.navigation],
   );
 
-  const headerItems: TabMenuHeaderItem[] = useMemo(() => {
-    return [
-      {
-        imgInfo: {
-          imgSource: require('../../assets/images/capsule.png'),
-          width: 37,
-          height: 40,
-        },
-        text: `도착한 캡슐 ${10}개`,
-      },
-    ];
-  }, []);
-
-  const listItems: TabMenuListItem[] = useMemo(() => {
+  const listItems = useMemo(() => {
     return Array.from({ length: 25 }, () => MOCK_ITEM);
   }, []);
+
+  const listItems2 = useMemo(() => {
+    return Array.from({ length: 25 }, () => MOCK_ITEM2);
+  }, []);
+
+  const viewList = useMemo(
+    () => [
+      <ListView items={listItems} onEndReached={() => {}} />,
+      <ListView items={listItems2} onEndReached={() => {}} />,
+      <CapsuleDetail />,
+    ],
+    [listItems, listItems2],
+  );
 
   return (
     <View style={styles.container}>
       <Header />
-      <TabMenu headerItems={headerItems} listItems={listItems} />
+      <TabMenu headerItems={tabHeaderItems} viewList={viewList} />
       {/* TEST BACK BUTTON */}
-      <TouchableOpacity onPress={_onPress}>
+      {/* <TouchableOpacity onPress={_onPress}>
         <View style={defaultStyles.button}>
           <Text>BACK</Text>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }

@@ -8,7 +8,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-type NewType = {
+type PropsType = {
   onPress(event: GestureResponderEvent): void;
   imgInfo: {
     source: ImageSourcePropType;
@@ -18,9 +18,7 @@ type NewType = {
   styles?: StyleProp<ViewStyle>;
 };
 
-type PropsType = NewType;
-
-const TouchableImage: React.FC<PropsType> = ({ onPress, imgInfo, styles }) => {
+function TouchableImage({ onPress, imgInfo, styles }: PropsType) {
   return (
     <TouchableOpacity onPress={onPress} style={styles}>
       <Image
@@ -30,6 +28,6 @@ const TouchableImage: React.FC<PropsType> = ({ onPress, imgInfo, styles }) => {
       />
     </TouchableOpacity>
   );
-};
+}
 
 export default TouchableImage;

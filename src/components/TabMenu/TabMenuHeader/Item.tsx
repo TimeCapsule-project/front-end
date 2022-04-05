@@ -4,25 +4,33 @@ import {
   ImageSourcePropType,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { darkBlue } from '../../../assets/styles/colors';
 import { mixinStyles } from '../../../assets/styles/mixin';
 
-export type TabMenuHeaderItem = {
+export type TabMenuHeaderItemInfo = {
   imgInfo: {
-    imgSource: ImageSourcePropType;
+    activeImgSource: ImageSourcePropType;
+    inActiveImgSource: ImageSourcePropType;
     width: number;
     height: number;
   };
   text: string;
 };
 
-type PropsType = TabMenuHeaderItem;
+type ComponentProps = {
+  isActive: boolean;
+  onPress: () => void;
+};
+
+type TabMenuHeaderItemProps = TabMenuHeaderItemInfo & Partial<ComponentProps>;
 
 const styles = StyleSheet.create({
   container: {
     ...mixinStyles.flexCenter,
+    position: 'relative',
     flexDirection: 'column',
     flex: 1,
     height: 86,
@@ -32,32 +40,41 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     width: 50,
     fontSize: 10,
+    paddingBottom: 9,
     color: darkBlue,
     textAlign: 'center',
     fontWeight: 'bold',
     fontFamily: 'GangwonEduAllBold',
   },
   bottomLine: {
+    position: 'absolute',
     width: 68,
+    bottom: 0,
     marginTop: 'auto',
     borderBottomWidth: 2,
     borderBottomColor: darkBlue,
   },
+  bottomLineNone: {},
 });
 
-const TabMenuHeaderItem: React.FC<PropsType> = ({ imgInfo, text }) => {
+function TabMenuHeaderItem({
+  imgInfo,
+  text,
+  isActive,
+  onPress,
+}: TabMenuHeaderItemProps) {
   return (
-    <View style={styles.container}>
+    <TouchableOpacity onPress={onPress} style={styles.container}>
       <Image
-        source={imgInfo.imgSource}
+        source={isActive ? imgInfo.activeImgSource : imgInfo.inActiveImgSource}
         style={{ width: imgInfo.width, height: imgInfo.height }}
         width={imgInfo.width}
         height={imgInfo.height}
       />
       <Text style={styles.text}>{text}</Text>
-      <View style={styles.bottomLine} />
-    </View>
+      <View style={isActive ? styles.bottomLine : styles.bottomLineNone} />
+    </TouchableOpacity>
   );
-};
+}
 
 export default TabMenuHeaderItem;

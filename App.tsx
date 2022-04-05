@@ -5,7 +5,7 @@ import SplashScreen from 'react-native-splash-screen';
 import { globalStyles } from './src/assets/styles/global';
 import Routes from './src/pages/routes';
 
-const App: React.FC<{}> = () => {
+function App() {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
@@ -15,6 +15,6 @@ const App: React.FC<{}> = () => {
       <Routes />
     </SafeAreaView>
   );
-};
+}
 
 export default App;
