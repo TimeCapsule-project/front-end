@@ -1,5 +1,6 @@
-import { mixinStyles } from '../../assets/styles/mixin';
 import { StyleSheet } from 'react-native';
+import { yellow } from '../../assets/styles/colors';
+import { mixinStyles } from '../../assets/styles/mixin';
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
     height: 45,
     marginTop: 68,
     color: '#271616',
-    backgroundColor: '#E3BE39',
+    backgroundColor: yellow,
   },
 });
 

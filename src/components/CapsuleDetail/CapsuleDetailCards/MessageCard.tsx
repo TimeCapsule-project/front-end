@@ -63,6 +63,7 @@ function MessageCard({ submit, dispatch, parentHeight }: MessageCardProps) {
           <TextInput
             style={styles.fromText}
             value={nickname}
+            textAlignVertical={'bottom'}
             placeholderTextColor={'#ffffff'}
             placeholder={'닉네임을 입력해주세요.'}
             onChangeText={_onChangeFromText}
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
   },
   textArea: {
     flex: 1,
-    padding: 15,
+    padding: 5,
     borderWidth: 2,
     borderColor: darkBlue,
     backgroundColor: '#ffffff',

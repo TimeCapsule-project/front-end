@@ -3,9 +3,18 @@ import { Animated, PanResponder } from 'react-native';
 
 type PropsType = {
   children: JSX.Element;
+  releaseEventHandler?: (pan: Animated.ValueXY) => void;
 };
 
-function GestureView({ children }: PropsType) {
+/**
+ * @description 제스처를 제어하기 위한 View Container 입니다. /
+ * 현재 Horizental direction 만 지원하고 있습니다.
+ * @type {function(PropsType): JSX.Element {}}
+ */
+function GestureView({
+  children,
+  releaseEventHandler,
+}: PropsType): JSX.Element {
   const _pan = useRef(new Animated.ValueXY()).current;
   const _panResponder = useRef(
     PanResponder.create({
@@ -22,7 +31,7 @@ function GestureView({ children }: PropsType) {
         useNativeDriver: false,
       }),
       onPanResponderRelease: () => {
-        _pan.flattenOffset();
+        releaseEventHandler && releaseEventHandler(_pan);
       },
     }),
   ).current;

@@ -1,9 +1,18 @@
-import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { sandGray } from '../../assets/styles/colors';
+import React, { useCallback } from 'react';
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Animated,
+} from 'react-native';
+import { darkBlue, sandGray, tomatoRed } from '../../assets/styles/colors';
 import { mixinStyles } from '../../assets/styles/mixin';
+import DeactiveNoti from '../SvgComponents/deactiveNoti';
+import Trash from '../SvgComponents/trash';
 import GestureView from '../GestureView';
-import TouchableImage from '../TouchableImage';
 
 const capsuleSource = '../../assets/images/capsule.png';
 
@@ -18,20 +27,83 @@ export type ListViewItem = {
 
 type PropsType = ListViewItem;
 
+export const leftButtonOnPress = () => {
+  console.log('leftButton pressed');
+};
+
+export const rightButtonOnPress = () => {
+  console.log('rightButton pressed');
+};
+
+function ListViewItem({ date, dDayText, fromUserName }: PropsType) {
+  /* 스크롤 범위 제한 및 스크롤시 최대 범위 까지 자동 스크롤링 */
+  const releaseEventHandler = useCallback((pan: Animated.ValueXY) => {
+    const SCROLL_LIMIT = 120;
+    // @ts-ignore
+    let x = pan.x._value;
+    if (x > 0) {
+      x = SCROLL_LIMIT < x ? SCROLL_LIMIT : x;
+    } else {
+      x = SCROLL_LIMIT * -1 > x ? SCROLL_LIMIT * -1 : x;
+    }
+    Animated.spring(pan, { toValue: { x, y: 0 }, useNativeDriver: false });
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <GestureView releaseEventHandler={releaseEventHandler}>
+        <View style={styles.innerContainer}>
+          <TouchableOpacity
+            style={styles.leftButton}
+            onPress={leftButtonOnPress}>
+            <DeactiveNoti />
+          </TouchableOpacity>
+          <View style={styles.mainContainer}>
+            <Image
+              style={styles.img}
+              source={require(capsuleSource)}
+              width={46}
+              height={48}
+            />
+            <View style={styles.textContentsWrap}>
+              <Text style={styles.dDayText}>{dDayText}</Text>
+              <Text style={styles.dateText}>{date}</Text>
+              <Text style={styles.fromUserNameText}>{fromUserName}</Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={styles.rightButton}
+            onPress={rightButtonOnPress}>
+            <Trash />
+          </TouchableOpacity>
+        </View>
+      </GestureView>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    backgroundColor: sandGray,
-    borderRadius: 20,
+    justifyContent: 'center',
+    overflow: 'hidden',
     paddingHorizontal: 20,
-    height: 85,
+    height: 96,
     marginBottom: 12,
   },
-  mainContainer: {
-    ...mixinStyles.flexCenter,
+  innerContainer: {
     flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  mainContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: sandGray,
+    width: Dimensions.get('screen').width - 60,
+    paddingHorizontal: 12,
+    paddingVertical: 18,
+    borderRadius: 20,
   },
   img: {
     marginRight: 17,
@@ -51,50 +123,20 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
   },
-  sideButtonWrap: {},
-  hideButtonsWrap: {},
+  leftButton: {
+    ...mixinStyles.flexCenter,
+    width: 120,
+    height: 96,
+    borderRadius: 20,
+    backgroundColor: darkBlue,
+  },
+  rightButton: {
+    ...mixinStyles.flexCenter,
+    width: 120,
+    height: 96,
+    borderRadius: 20,
+    backgroundColor: tomatoRed,
+  },
 });
-
-function ListViewItem({ date, dDayText, fromUserName }: PropsType) {
-  return (
-    <GestureView>
-      <View style={styles.container}>
-        <View style={styles.mainContainer}>
-          <Image
-            style={styles.img}
-            source={require(capsuleSource)}
-            width={46}
-            height={48}
-          />
-          <View style={styles.textContentsWrap}>
-            <Text style={styles.dDayText}>{dDayText}</Text>
-            <Text style={styles.dateText}>{date}</Text>
-            <Text style={styles.fromUserNameText}>{fromUserName}</Text>
-          </View>
-          <View style={styles.sideButtonWrap}>
-            <TouchableImage
-              onPress={() => {}}
-              imgInfo={{ source: 'dsadasdasd', width: 30, height: 30 }}
-            />
-            <TouchableImage
-              onPress={() => {}}
-              imgInfo={{ source: 'dsadasdasd', width: 30, height: 30 }}
-            />
-          </View>
-        </View>
-        <View style={styles.hideButtonsWrap}>
-          <TouchableImage
-            onPress={() => {}}
-            imgInfo={{ source: 'dsadasdasd', width: 30, height: 30 }}
-          />
-          <TouchableImage
-            onPress={() => {}}
-            imgInfo={{ source: 'dsadasdasd', width: 30, height: 30 }}
-          />
-        </View>
-      </View>
-    </GestureView>
-  );
-}
 
 export default ListViewItem;

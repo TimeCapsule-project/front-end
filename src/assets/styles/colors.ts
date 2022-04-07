@@ -1,5 +1,7 @@
 export const orange = '#E7A54E';
 
+export const yellow = '#E3BE39';
+
 export const sandGray = '#D9D3CC';
 
 export const tomatoRed = '#CB3F28';

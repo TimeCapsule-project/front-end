@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import TouchableImage from '../../TouchableImage';
 import Container from './Container';
@@ -24,10 +24,12 @@ function CapsuleDesignsCard({
     [dispatch],
   );
 
+  const maxHeight = useMemo(() => parentHeight * 0.7, [parentHeight]);
+
   return (
     <Container
       title={'Design'}
-      style={[styles.container, { height: parentHeight * 0.7 }]}>
+      style={[styles.container, { height: maxHeight }]}>
       <View style={styles.designTabBox}>
         {designs.map((item: DesignItem, index: React.Key) => (
           <TouchableImage
