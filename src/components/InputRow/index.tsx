@@ -1,3 +1,4 @@
+import TemplateText from 'components/TemplateText';
 import React, { useState } from 'react';
 import {
   GestureResponderEvent,
@@ -31,6 +32,7 @@ type PropsType = {
   inputProps: InputProps['inputProps'];
   buttonProps?: ButtonProps;
   labelStyle?: StyleProp<TextStyle>;
+  inputWrapStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
   type: string;
   label: string;
@@ -64,7 +66,7 @@ function DateTimeInput(props: InputPropsType) {
       />
       <TextInput
         {...props}
-        style={[props.style, { marginLeft: 10 }]}
+        style={[props.style, styles.dateTimeInput2]}
         onChangeText={(text: string) => {
           const { onChangeDateTimeText } = props;
           onChangeDateTimeText && onChangeDateTimeText({ date, time: text });
@@ -87,9 +89,9 @@ function Button(props: ButtonProps) {
   return (
     <TouchableOpacity onPress={props.onPress}>
       <View style={[styles.button, props.style || {}]}>
-        <Text style={[styles.buttonText, props.textStyle || {}]}>
+        <TemplateText familyType="power" style={props.textStyle || {}}>
           {props.text}
-        </Text>
+        </TemplateText>
       </View>
     </TouchableOpacity>
   );
@@ -98,6 +100,7 @@ function Button(props: ButtonProps) {
 function InputRow({
   label,
   labelStyle,
+  inputWrapStyle,
   type,
   inputProps,
   buttonProps,
@@ -105,8 +108,12 @@ function InputRow({
 }: PropsType) {
   return (
     <View style={[styles.container, containerStyle || {}]}>
-      <Text style={labelStyle || {}}>{label}</Text>
-      <View style={styles.inputWrap}>
+      <View>
+        <TemplateText familyType="power" style={labelStyle || {}}>
+          {label}
+        </TemplateText>
+      </View>
+      <View style={[styles.inputWrap, inputWrapStyle || {}]}>
         <Input type={type} inputProps={inputProps} />
         {buttonProps && <Button {...buttonProps} />}
       </View>
@@ -121,18 +128,13 @@ const styles = StyleSheet.create({
   },
   inputWrap: {
     flexDirection: 'row',
-    flex: 1,
   },
   dateTimeWrap: { flexDirection: 'row' },
-  dateTimeInput2: { marginLeft: 15 },
+  dateTimeInput2: { marginLeft: 10 },
   button: {
     ...mixinStyles.flexCenter,
-    width: 100,
     height: '100%',
     borderRadius: 4,
-  },
-  buttonText: {
-    fontFamily: 'GangwonEduAllBold',
   },
 });
 

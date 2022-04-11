@@ -13,12 +13,12 @@ import { defaultStyles } from '../../assets/styles/default';
 import { globalStyles } from '../../assets/styles/global';
 import { mixinStyles } from '../../assets/styles/mixin';
 import { darkBlue, yellow } from '../../assets/styles/colors';
-import TemplateText from 'components/TemplateText';
+import TemplateText from '../../components/TemplateText';
 
 const thumbnailSource = '../../assets/images/thumbnail.png';
 
 type PropsType = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'SignInfoStep'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Intro'>;
 };
 
 function Intro(props: PropsType) {
@@ -31,11 +31,14 @@ function Intro(props: PropsType) {
   );
 
   const _onPressSignUp = useCallback(
-    () => props.navigation.navigate('SignInfoStep'),
+    () => props.navigation.navigate('SignUp/AccountInfoStep'),
     [props.navigation],
   );
 
-  const _onPressFindPassword = useCallback(() => {}, []);
+  const _onPressFindPassword = useCallback(
+    () => props.navigation.navigate('FindPassword'),
+    [props.navigation],
+  );
 
   const _onChangeID = useCallback((text: string) => setId(text), []);
 
@@ -80,12 +83,6 @@ function Intro(props: PropsType) {
           </TemplateText>
         </TouchableOpacity>
       </View>
-      {/* '테스트 로그인 버튼' */}
-      <TouchableOpacity style={styles.loginBtn} onPress={_onPress}>
-        <TemplateText familyType="power" style={defaultStyles.buttonText}>
-          {'로그인'}
-        </TemplateText>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -104,15 +101,17 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     paddingHorizontal: 15,
+    marginTop: 45,
   },
   input: {
     fontFamily: 'GangwonEduPower',
     width: '100%',
     height: 45,
     borderRadius: 4,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    padding: 15,
     marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#bbbbbb',
     backgroundColor: '#E2E2E2',
   },
   buttonText: {
@@ -124,7 +123,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     width: '100%',
     height: 45,
-    marginTop: 25,
   },
   loginBtn: {
     ...defaultStyles.button,
@@ -149,7 +147,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'flex-end',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: -5,
     marginBottom: 25,
   },
   findPasswordText: {

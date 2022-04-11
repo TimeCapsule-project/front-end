@@ -1,15 +1,26 @@
 import React, { useCallback, useState } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { validator } from 'utils/validator';
 import { RootStackParamList } from '../routes';
-import AuthContainer from '../../components/AuthContainer';
-import InputRow from '../../components/InputRow';
-import styles from './style';
+import { validator } from 'utils/validator';
+import InputRow from 'components/InputRow';
+import TemplateText from 'components/TemplateText';
+import FormContainer from 'components/FormContainer';
+import styles from 'components/FormContainer/style';
+
+const commonOptions = {
+  containerStyle: styles.inputContainer,
+  labelStyle: styles.inputLabelStyle,
+  inputWrapStyle: styles.inputWrap,
+  type: 'text',
+};
 
 type PropsType = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'SignInfoStep'>;
+  navigation: NativeStackNavigationProp<
+    RootStackParamList,
+    'SignUp/AccountInfoStep'
+  >;
 };
 
 function AccountInfoStep({ navigation }: PropsType) {
@@ -17,9 +28,8 @@ function AccountInfoStep({ navigation }: PropsType) {
   const [password, setPassword] = useState<string>('');
   const [checkPassword, setCheckPassword] = useState<string>('');
 
-  const backBtnPress = useCallback(() => navigation.goBack(), [navigation]);
   const nextBtnPress = useCallback(
-    () => navigation.navigate('SignInfoStep'),
+    () => navigation.navigate('SignUp/SignInfoStep'),
     [navigation],
   );
 
@@ -40,46 +50,49 @@ function AccountInfoStep({ navigation }: PropsType) {
   );
 
   return (
-    <AuthContainer backBtnOption={{ func: backBtnPress, text: '돌아가기' }}>
+    <FormContainer backBtnText={'돌아가기'}>
       <InputRow
-        containerStyle={styles.inputContainer}
+        {...commonOptions}
         inputProps={{
+          style: styles.input,
           onChangeText: _onChangeTextID,
           placeholder: '영문, 숫자 혼합 5자리 이상',
           value: id,
         }}
         buttonProps={{
+          style: styles.button,
           text: '중복 확인',
-          textStyle: styles.inputButton,
+          textStyle: styles.inputButtonText,
           onPress: checkDuplID,
         }}
-        type="text"
         label={'아이디'}
       />
       <InputRow
-        containerStyle={styles.inputContainer}
+        {...commonOptions}
         inputProps={{
+          style: styles.input,
           onChangeText: _onChangeTextPassword,
           placeholder: '비밀번호',
           value: password,
         }}
-        type="text"
         label={'비밀번호'}
       />
       <InputRow
-        containerStyle={styles.inputContainer}
+        {...commonOptions}
         inputProps={{
+          style: styles.input,
           onChangeText: _onChangeTextCheckPassword,
           placeholder: '비밀번호 확인',
           value: checkPassword,
         }}
-        type="text"
         label={'비밀번호 확인'}
       />
       <TouchableOpacity style={styles.signUpButton} onPress={nextBtnPress}>
-        <Text>{'다음'}</Text>
+        <TemplateText familyType="power" style={styles.signUpButtonText}>
+          {'다음'}
+        </TemplateText>
       </TouchableOpacity>
-    </AuthContainer>
+    </FormContainer>
   );
 }
 

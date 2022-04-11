@@ -1,15 +1,26 @@
 import React, { useCallback, useState } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { validator } from 'utils/validator';
 import { RootStackParamList } from '../routes';
-import AuthContainer from '../../components/AuthContainer';
-import InputRow from '../../components/InputRow';
-import styles from './style';
+import { validator } from 'utils/validator';
+import InputRow from 'components/InputRow';
+import TemplateText from 'components/TemplateText';
+import FormContainer from 'components/FormContainer';
+import styles from 'components/FormContainer/style';
+
+const commonOptions = {
+  containerStyle: styles.inputContainer,
+  labelStyle: styles.inputLabelStyle,
+  inputWrapStyle: styles.inputWrap,
+  type: 'text',
+};
 
 type PropsType = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'SignInfoStep'>;
+  navigation: NativeStackNavigationProp<
+    RootStackParamList,
+    'SignUp/SignInfoStep'
+  >;
 };
 
 function SignInfoStep({ navigation }: PropsType) {
@@ -17,7 +28,6 @@ function SignInfoStep({ navigation }: PropsType) {
   const [email, setEmail] = useState<string>('');
   const [authNumber, setAuthNumber] = useState<string>('');
 
-  const backBtnPress = useCallback(() => navigation.goBack(), [navigation]);
   const doneBtnPress = useCallback(() => {
     // TODO: CALL LOGIN API
     navigation.navigate('Intro');
@@ -50,53 +60,61 @@ function SignInfoStep({ navigation }: PropsType) {
   );
 
   return (
-    <AuthContainer backBtnOption={{ func: backBtnPress, text: '이전 단계' }}>
+    <FormContainer backBtnText={'이전 단계'}>
       <InputRow
+        {...commonOptions}
         inputProps={{
+          style: styles.input,
           onChangeText: _onChangeTextNickname,
           placeholder: '영문, 숫자 혼합 5자리 이상',
           value: nickname,
         }}
         buttonProps={{
+          style: styles.button,
           text: '중복 확인',
-          textStyle: styles.inputButton,
+          textStyle: styles.inputButtonText,
           onPress: checkDuplNickname,
         }}
-        type="text"
         label={'닉네임'}
       />
       <InputRow
+        {...commonOptions}
         inputProps={{
+          style: styles.input,
           onChangeText: _onChangeTextEmail,
           placeholder: '이메일을 입력해주세요.',
           value: email,
         }}
         buttonProps={{
+          style: styles.button,
           text: '인증 받기',
-          textStyle: styles.inputButton,
+          textStyle: styles.inputButtonText,
           onPress: getEmailAuthNum,
         }}
-        type="text"
         label={'이메일'}
       />
       <InputRow
+        {...commonOptions}
         inputProps={{
+          style: styles.input,
           onChangeText: _onChangeTextAuthNumber,
           placeholder: '인증번호 4자리를 입력해주세요.',
           value: authNumber,
         }}
         buttonProps={{
+          style: styles.button,
           text: '확인',
-          textStyle: styles.inputButton,
+          textStyle: styles.inputButtonText,
           onPress: checkEmailAuthNumber,
         }}
-        type="text"
         label={'이메일 인증번호'}
       />
       <TouchableOpacity style={styles.signUpButton} onPress={doneBtnPress}>
-        <Text>{'완료'}</Text>
+        <TemplateText familyType="power" style={styles.signUpButtonText}>
+          {'완료'}
+        </TemplateText>
       </TouchableOpacity>
-    </AuthContainer>
+    </FormContainer>
   );
 }
 
