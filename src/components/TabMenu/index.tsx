@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     backgroundColor: orange,
   },
   nullBox: { flex: 1 },
-  spacingBox: { height: 25 },
+  spacingBox: { height: 15 },
 });
 
 function TabMenu({ headerItems, viewList, defaultTab }: PropsType) {

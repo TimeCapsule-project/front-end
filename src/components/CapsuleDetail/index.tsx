@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import Swiper from 'react-native-swiper';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Swiper from 'react-native-swiper';
 
 import { mixinStyles } from '../../assets/styles/mixin';
 import { darkBlue, sandGray } from '../../assets/styles/colors';
@@ -9,20 +9,25 @@ import { RootStackParamList } from '../../pages/routes';
 import TemplateText from '../../components/TemplateText';
 
 type PropsType = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'SignInfoStep'>;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
 function CapsuleDetail({ navigation }: PropsType) {
-  const [type, setType] = useState<'anywhere' | 'special'>('anywhere');
+  const [index, setIndex] = useState<number>(0);
 
-  const goWrite = useCallback(() => 
-    () => navigation.navigate('anywhere' ? 'SignInfoStep' : ''),
-    [navigation]
+  const _onIndexChanged = useCallback((_index: number) => setIndex(_index), []);
+
+  const goWriteCapsule = useCallback(
+    () =>
+      navigation.navigate('WriteCapsule', {
+        type: index === 0 ? 'anywhere' : 'sepcial',
+      }),
+    [navigation, index],
   );
 
   return (
     <View style={styles.container}>
-      <Swiper style={styles.wrapper}>
+      <Swiper style={styles.wrapper} onIndexChanged={_onIndexChanged}>
         <View style={styles.anyWhereCard}>
           <TemplateText familyType="power" style={styles.anyWhereCardTitle}>
             {'Anywhere'}
@@ -58,7 +63,7 @@ function CapsuleDetail({ navigation }: PropsType) {
           </TemplateText>
         </View>
       </Swiper>
-      <TouchableOpacity style={styles.button} onPress={goWrite}>
+      <TouchableOpacity style={styles.button} onPress={goWriteCapsule}>
         <TemplateText familyType="power" style={styles.buttonText}>
           {'선택하기'}
         </TemplateText>
@@ -68,29 +73,39 @@ function CapsuleDetail({ navigation }: PropsType) {
 }
 
 const styles = StyleSheet.create({
-  container: { justifyContent: 'center' },
-  wrapper: { flex: 1 },
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    paddingHorizontal: 25,
+    paddingBottom: Dimensions.get('window').height * 0.125,
+  },
+  wrapper: {},
   anyWhereCard: {
+    flex: 1,
     padding: 25,
     borderRadius: 20,
     backgroundColor: sandGray,
   },
   anyWhereCardTitle: {
     fontSize: 48,
+    marginBottom: 10,
     color: darkBlue,
     fontWeight: 'bold',
   },
   boldText: {
     fontSize: 28,
+    lineHeight: 32,
     fontWeight: 'bold',
   },
   text: {
     fontSize: 28,
+    lineHeight: 32,
   },
   fontColor: {
     color: '#FFFFFF',
   },
   specialPriceCard: {
+    flex: 1,
     padding: 25,
     borderRadius: 20,
     backgroundColor: darkBlue,
@@ -98,12 +113,14 @@ const styles = StyleSheet.create({
   specialPlaceCardTitle: {
     width: 200,
     fontSize: 48,
+    marginBottom: 10,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
   button: {
     ...mixinStyles.flexCenter,
     width: '50%',
+    height: 45,
     marginTop: 25,
     borderRadius: 4,
     backgroundColor: darkBlue,

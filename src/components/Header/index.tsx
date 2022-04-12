@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { darkBlue } from '../../assets/styles/colors';
-import MegaphoneSvg from '../../components/SvgComponents/megaphone';
-import ActiveBellSvg from '../../components/SvgComponents/activeBell';
-import SettingSvg from '../../components/SvgComponents/setting';
+import { StyleSheet, View } from 'react-native';
+import { darkBlue } from 'assets/styles/colors';
+import TemplateText from 'components/TemplateText';
+import SettingSvg from 'components/SvgComponents/setting';
+import MegaphoneSvg from 'components/SvgComponents/megaphone';
+import ActiveBellSvg from 'components/SvgComponents/activeBell';
 
 const styles = StyleSheet.create({
   container: {
@@ -40,7 +41,9 @@ function Header() {
     <View style={styles.container}>
       <View style={styles.leftBox}>
         <MegaphoneSvg />
-        <Text style={styles.newsText}>{'크리스마스까지 D-100 ! (TODO)'}</Text>
+        <TemplateText familyType="power" style={styles.newsText}>
+          {'크리스마스까지 D-100 ! (TODO)'}
+        </TemplateText>
       </View>
       <View style={styles.rightBox}>
         <ActiveBellSvg />

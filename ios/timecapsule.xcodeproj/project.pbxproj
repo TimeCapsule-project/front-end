@@ -11,12 +11,12 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		2CAC30070A3B4CC582A5BBC1 /* GangwonEduPower.woff2 in Resources */ = {isa = PBXBuildFile; fileRef = A034EEF76395409E8792A4F9 /* GangwonEduPower.woff2 */; };
+		43711F4B4D034DE28F257DB4 /* GangwonEduAllBold.woff2 in Resources */ = {isa = PBXBuildFile; fileRef = 30FF9B274E17472D9F4E8A20 /* GangwonEduAllBold.woff2 */; };
 		6172F2D35A4C3AA820D92908 /* libPods-timecapsule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6423831EA8574132BED9D8CC /* libPods-timecapsule.a */; };
 		7EF68E3733C33B6898317E18 /* libPods-timecapsule-timecapsuleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABFE59519B596E51CEFDCCC0 /* libPods-timecapsule-timecapsuleTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		43711F4B4D034DE28F257DB4 /* GangwonEduAllBold.woff2 in Resources */ = {isa = PBXBuildFile; fileRef = 30FF9B274E17472D9F4E8A20 /* GangwonEduAllBold.woff2 */; };
 		8A386086C16540909A82073B /* GangwonEduAllLight.woff2 in Resources */ = {isa = PBXBuildFile; fileRef = B1EC9441DF7F4CEEBF2639D5 /* GangwonEduAllLight.woff2 */; };
-		2CAC30070A3B4CC582A5BBC1 /* GangwonEduPower.woff2 in Resources */ = {isa = PBXBuildFile; fileRef = A034EEF76395409E8792A4F9 /* GangwonEduPower.woff2 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,16 +40,16 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = timecapsule/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = timecapsule/main.m; sourceTree = "<group>"; };
 		1D0AE47A65C8663E3B452821 /* Pods-timecapsule-timecapsuleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-timecapsule-timecapsuleTests.release.xcconfig"; path = "Target Support Files/Pods-timecapsule-timecapsuleTests/Pods-timecapsule-timecapsuleTests.release.xcconfig"; sourceTree = "<group>"; };
+		30FF9B274E17472D9F4E8A20 /* GangwonEduAllBold.woff2 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = GangwonEduAllBold.woff2; path = ../src/assets/fonts/GangwonEduAllBold.woff2; sourceTree = "<group>"; };
 		6423831EA8574132BED9D8CC /* libPods-timecapsule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-timecapsule.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C97AB639B58BBB4B15BBE30 /* Pods-timecapsule-timecapsuleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-timecapsule-timecapsuleTests.debug.xcconfig"; path = "Target Support Files/Pods-timecapsule-timecapsuleTests/Pods-timecapsule-timecapsuleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = timecapsule/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A034EEF76395409E8792A4F9 /* GangwonEduPower.woff2 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = GangwonEduPower.woff2; path = ../src/assets/fonts/GangwonEduPower.woff2; sourceTree = "<group>"; };
 		ABFE59519B596E51CEFDCCC0 /* libPods-timecapsule-timecapsuleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-timecapsule-timecapsuleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1EC9441DF7F4CEEBF2639D5 /* GangwonEduAllLight.woff2 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = GangwonEduAllLight.woff2; path = ../src/assets/fonts/GangwonEduAllLight.woff2; sourceTree = "<group>"; };
 		C0A881CF5CF3F2B244570E2A /* Pods-timecapsule.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-timecapsule.debug.xcconfig"; path = "Target Support Files/Pods-timecapsule/Pods-timecapsule.debug.xcconfig"; sourceTree = "<group>"; };
 		D00AAFFCFCFDA5787532823F /* Pods-timecapsule.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-timecapsule.release.xcconfig"; path = "Target Support Files/Pods-timecapsule/Pods-timecapsule.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		30FF9B274E17472D9F4E8A20 /* GangwonEduAllBold.woff2 */ = {isa = PBXFileReference; name = "GangwonEduAllBold.woff2"; path = "../src/assets/fonts/GangwonEduAllBold.woff2"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		B1EC9441DF7F4CEEBF2639D5 /* GangwonEduAllLight.woff2 */ = {isa = PBXFileReference; name = "GangwonEduAllLight.woff2"; path = "../src/assets/fonts/GangwonEduAllLight.woff2"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A034EEF76395409E8792A4F9 /* GangwonEduPower.woff2 */ = {isa = PBXFileReference; name = "GangwonEduPower.woff2"; path = "../src/assets/fonts/GangwonEduPower.woff2"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +144,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		AB4B11C73C07462A97F992A3 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				30FF9B274E17472D9F4E8A20 /* GangwonEduAllBold.woff2 */,
+				B1EC9441DF7F4CEEBF2639D5 /* GangwonEduAllLight.woff2 */,
+				A034EEF76395409E8792A4F9 /* GangwonEduPower.woff2 */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
 		E233CBF5F47BEE60B243DCF8 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -155,17 +166,6 @@
 			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
-		};
-		AB4B11C73C07462A97F992A3 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				30FF9B274E17472D9F4E8A20 /* GangwonEduAllBold.woff2 */,
-				B1EC9441DF7F4CEEBF2639D5 /* GangwonEduAllLight.woff2 */,
-				A034EEF76395409E8792A4F9 /* GangwonEduPower.woff2 */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 

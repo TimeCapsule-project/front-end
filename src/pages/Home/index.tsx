@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { sandGray } from '../../assets/styles/colors';
 import Header from '../../components/Header';
 import TabMenu from '../../components/TabMenu';
@@ -33,12 +33,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function Home(props: { navigation: any }) {
-  const _onPress = useCallback(
-    () => props.navigation.navigate('Intro'),
-    [props.navigation],
-  );
+type PropsType = { navigation: any };
 
+function Home({ navigation }: PropsType) {
   const listItems = useMemo(() => {
     return Array.from({ length: 25 }, () => MOCK_ITEM);
   }, []);
@@ -51,21 +48,15 @@ function Home(props: { navigation: any }) {
     () => [
       <ListView items={listItems} onEndReached={() => {}} />,
       <ListView items={listItems2} onEndReached={() => {}} />,
-      <CapsuleDetail />,
+      <CapsuleDetail navigation={navigation} />,
     ],
-    [listItems, listItems2],
+    [listItems, listItems2, navigation],
   );
 
   return (
     <View style={styles.container}>
       <Header />
       <TabMenu headerItems={tabHeaderItems} viewList={viewList} />
-      {/* TEST BACK BUTTON */}
-      {/* <TouchableOpacity onPress={_onPress}>
-        <View style={defaultStyles.button}>
-          <Text>BACK</Text>
-        </View>
-      </TouchableOpacity> */}
     </View>
   );
 }

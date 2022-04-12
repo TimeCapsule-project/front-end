@@ -29,13 +29,13 @@ export default function Routes() {
       <Stack.Navigator initialRouteName="Intro" screenOptions={screenOptions}>
         <Stack.Screen name="Intro" component={Intro} />
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="FindPassword" component={FindPassword} />
+        <Stack.Screen name="WriteCapsule" component={WriteCapsule} />
         <Stack.Screen
           name="SignUp/AccountInfoStep"
           component={AccountInfoStep}
         />
         <Stack.Screen name="SignUp/SignInfoStep" component={SignInfoStep} />
-        <Stack.Screen name="FindPassword" component={FindPassword} />
-        <Stack.Screen name="WriteCapsule" component={WriteCapsule} />
       </Stack.Navigator>
     </NavigationContainer>
   );

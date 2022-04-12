@@ -1,18 +1,18 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
+  Image,
   Animated,
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import { darkBlue, sandGray, tomatoRed } from '../../assets/styles/colors';
 import { mixinStyles } from '../../assets/styles/mixin';
 import DeactiveNoti from '../SvgComponents/deactiveNoti';
 import Trash from '../SvgComponents/trash';
 import GestureView from '../GestureView';
+import TemplateText from 'components/TemplateText';
 
 const capsuleSource = '../../assets/images/capsule.png';
 
@@ -27,6 +27,8 @@ export type ListViewItem = {
 
 type PropsType = ListViewItem;
 
+const SCROLL_LIMIT = 120;
+
 export const leftButtonOnPress = () => {
   console.log('leftButton pressed');
 };
@@ -36,22 +38,32 @@ export const rightButtonOnPress = () => {
 };
 
 function ListViewItem({ date, dDayText, fromUserName }: PropsType) {
-  /* 스크롤 범위 제한 및 스크롤시 최대 범위 까지 자동 스크롤링 */
-  const releaseEventHandler = useCallback((pan: Animated.ValueXY) => {
-    const SCROLL_LIMIT = 120;
-    // @ts-ignore
-    let x = pan.x._value;
-    if (x > 0) {
-      x = SCROLL_LIMIT < x ? SCROLL_LIMIT : x;
-    } else {
-      x = SCROLL_LIMIT * -1 > x ? SCROLL_LIMIT * -1 : x;
-    }
-    Animated.spring(pan, { toValue: { x, y: 0 }, useNativeDriver: false });
-  }, []);
+  const valueY = useMemo(() => new Animated.Value(0), []);
+
+  const translate = useCallback(
+    (pan: Animated.ValueXY) => ({
+      x: pan.x.interpolate({
+        // 최대 스크롤 범위 보간
+        inputRange: [-SCROLL_LIMIT, 0, SCROLL_LIMIT],
+        outputRange: [-SCROLL_LIMIT, 0, SCROLL_LIMIT],
+        extrapolate: 'clamp',
+      }),
+      y: pan.y,
+    }),
+    [],
+  );
+
+  const moveEventHandler = useCallback(
+    (pan: Animated.ValueXY) =>
+      Animated.event([null, { dx: pan.x, dy: valueY }], {
+        useNativeDriver: false,
+      }),
+    [valueY],
+  );
 
   return (
     <View style={styles.container}>
-      <GestureView releaseEventHandler={releaseEventHandler}>
+      <GestureView translate={translate} moveEventHandler={moveEventHandler}>
         <View style={styles.innerContainer}>
           <TouchableOpacity
             style={styles.leftButton}
@@ -62,13 +74,19 @@ function ListViewItem({ date, dDayText, fromUserName }: PropsType) {
             <Image
               style={styles.img}
               source={require(capsuleSource)}
-              width={46}
-              height={48}
+              width={60}
+              height={60}
             />
             <View style={styles.textContentsWrap}>
-              <Text style={styles.dDayText}>{dDayText}</Text>
-              <Text style={styles.dateText}>{date}</Text>
-              <Text style={styles.fromUserNameText}>{fromUserName}</Text>
+              <TemplateText familyType="power" style={styles.dDayText}>
+                {dDayText}
+              </TemplateText>
+              <TemplateText familyType="bold" style={styles.dateText}>
+                {date}
+              </TemplateText>
+              <TemplateText familyType="bold" style={styles.fromUserNameText}>
+                {fromUserName}
+              </TemplateText>
             </View>
           </View>
           <TouchableOpacity
@@ -112,16 +130,19 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   dDayText: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: 20,
+    marginBottom: 3,
+    color: darkBlue,
   },
   dateText: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: 14,
+    marginBottom: 3,
+    color: darkBlue,
   },
   fromUserNameText: {
-    fontSize: 10,
-    fontWeight: 'bold',
+    fontSize: 14,
+    opacity: 0.8,
+    color: darkBlue,
   },
   leftButton: {
     ...mixinStyles.flexCenter,
