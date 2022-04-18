@@ -6,7 +6,7 @@ export default [
       width: 34,
       height: 34,
     },
-    text: '내가 보낸 캡슐 확인하기',
+    texts: ['내가 보낸 캡슐', '확인하기'],
   },
   {
     imgInfo: {
@@ -15,7 +15,7 @@ export default [
       width: 37,
       height: 40,
     },
-    text: `도착한 캡슐 ${10}개`,
+    texts: ['도착한 캡슐', `${10}개`],
   },
   {
     imgInfo: {
@@ -24,6 +24,6 @@ export default [
       width: 37,
       height: 45,
     },
-    text: '타임 캡슐 묻기',
+    texts: ['타임 캡슐', '묻기'],
   },
 ];

@@ -12,58 +12,78 @@ type PropsType = {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 };
 
+interface RenderSwiperProps {
+  onIndexChanged: (i: number) => void;
+}
+
+const AnywhereCard = React.memo(function () {
+  return (
+    <View style={styles.anyWhereCard}>
+      <TemplateText familyType="power" style={styles.anyWhereCardTitle}>
+        {'Anywhere'}
+      </TemplateText>
+      <TemplateText familyType="light" style={styles.text}>
+        {'오픈시간이 되면,'}
+      </TemplateText>
+      <TemplateText familyType="bold" style={styles.text}>
+        {'어디서나'}
+      </TemplateText>
+      <TemplateText familyType="light" style={styles.text}>
+        {'열 수 있는 타임캡슐'}
+      </TemplateText>
+    </View>
+  );
+});
+
+const SpecialCard = React.memo(function () {
+  return (
+    <View style={styles.specialPriceCard}>
+      <TemplateText familyType="power" style={styles.specialPlaceCardTitle}>
+        {'Special Place'}
+      </TemplateText>
+      <TemplateText familyType="light" style={[styles.text, styles.fontColor]}>
+        {'우리만의'}
+      </TemplateText>
+      <TemplateText familyType="bold" style={[styles.text, styles.fontColor]}>
+        {'특별한 장소 에서'}
+      </TemplateText>
+      <TemplateText familyType="light" style={[styles.text, styles.fontColor]}>
+        {'열 수 있는 타임캡슐'}
+      </TemplateText>
+    </View>
+  );
+});
+
+const RenderSwiper = React.memo(function ({
+  onIndexChanged,
+}: RenderSwiperProps) {
+  return (
+    <Swiper onIndexChanged={onIndexChanged}>
+      <AnywhereCard />
+      <SpecialCard />
+    </Swiper>
+  );
+});
+
 function CapsuleDetail({ navigation }: PropsType) {
   const [index, setIndex] = useState<number>(0);
 
   const _onIndexChanged = useCallback((_index: number) => setIndex(_index), []);
 
   const goWriteCapsule = useCallback(
-    () =>
+    (_index: number) =>
       navigation.navigate('WriteCapsule', {
-        type: index === 0 ? 'anywhere' : 'sepcial',
+        type: _index === 0 ? 'anywhere' : 'special',
       }),
-    [navigation, index],
+    [navigation],
   );
 
   return (
     <View style={styles.container}>
-      <Swiper style={styles.wrapper} onIndexChanged={_onIndexChanged}>
-        <View style={styles.anyWhereCard}>
-          <TemplateText familyType="power" style={styles.anyWhereCardTitle}>
-            {'Anywhere'}
-          </TemplateText>
-          <TemplateText familyType="light" style={styles.text}>
-            {'오픈시간이 되면,'}
-          </TemplateText>
-          <TemplateText familyType="bold" style={styles.boldText}>
-            {'어디서나'}
-          </TemplateText>
-          <TemplateText familyType="light" style={styles.text}>
-            {'열 수 있는 타임캡슐'}
-          </TemplateText>
-        </View>
-        <View style={styles.specialPriceCard}>
-          <TemplateText familyType="power" style={styles.specialPlaceCardTitle}>
-            {'Special Place'}
-          </TemplateText>
-          <TemplateText
-            familyType="light"
-            style={[styles.text, styles.fontColor]}>
-            {'우리만의'}
-          </TemplateText>
-          <TemplateText
-            familyType="bold"
-            style={[styles.boldText, styles.fontColor]}>
-            {'특별한 장소 에서'}
-          </TemplateText>
-          <TemplateText
-            familyType="light"
-            style={[styles.text, styles.fontColor]}>
-            {'열 수 있는 타임캡슐'}
-          </TemplateText>
-        </View>
-      </Swiper>
-      <TouchableOpacity style={styles.button} onPress={goWriteCapsule}>
+      <RenderSwiper onIndexChanged={_onIndexChanged} />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => goWriteCapsule(index)}>
         <TemplateText familyType="power" style={styles.buttonText}>
           {'선택하기'}
         </TemplateText>
@@ -79,7 +99,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingBottom: Dimensions.get('window').height * 0.125,
   },
-  wrapper: {},
   anyWhereCard: {
     flex: 1,
     padding: 25,
@@ -90,14 +109,9 @@ const styles = StyleSheet.create({
     fontSize: 48,
     marginBottom: 10,
     color: darkBlue,
-    fontWeight: 'bold',
-  },
-  boldText: {
-    fontSize: 28,
-    lineHeight: 32,
-    fontWeight: 'bold',
   },
   text: {
+    color: darkBlue,
     fontSize: 28,
     lineHeight: 32,
   },
@@ -114,7 +128,6 @@ const styles = StyleSheet.create({
     width: 200,
     fontSize: 48,
     marginBottom: 10,
-    fontWeight: 'bold',
     color: '#FFFFFF',
   },
   button: {

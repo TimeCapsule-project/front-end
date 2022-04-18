@@ -21,6 +21,7 @@ function TabMenuHeader({ items, setTab, currentTab }: PropsType) {
       {items.map((item: TabMenuHeaderItemInfo, i: React.Key) => (
         <Item
           {...item}
+          key={i}
           isActive={currentTab === i}
           onPress={() => setTab(Number(i))}
         />

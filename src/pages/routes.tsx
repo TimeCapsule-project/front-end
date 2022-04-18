@@ -13,7 +13,7 @@ export type RootStackParamList = {
   Home: undefined;
   Intro: undefined;
   FindPassword: undefined;
-  WriteCapsule: { type: string };
+  WriteCapsule: { type: 'anywhere' | 'special' };
   'SignUp/SignInfoStep': undefined;
   'SignUp/AccountInfoStep': undefined;
 };

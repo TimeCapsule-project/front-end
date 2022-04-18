@@ -1,8 +1,10 @@
 import React, { useCallback } from 'react';
 import { Text, TextProps } from 'react-native';
 
+export type FontFamily = 'power' | 'bold' | 'light';
+
 type PropsType = {
-  familyType?: 'power' | 'bold' | 'light';
+  familyType?: FontFamily;
 };
 
 const TemplateText: React.FC<PropsType & TextProps> = props => {

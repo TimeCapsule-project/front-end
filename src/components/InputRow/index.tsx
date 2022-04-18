@@ -1,10 +1,7 @@
-import TemplateText from 'components/TemplateText';
 import React, { useState } from 'react';
 import {
   GestureResponderEvent,
   StyleProp,
-  StyleSheet,
-  Text,
   TextInput,
   TextInputProps,
   TextStyle,
@@ -12,31 +9,36 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { mixinStyles } from '../../assets/styles/mixin';
+import TemplateText, { FontFamily } from 'components/TemplateText';
+import { styles } from './style';
 
 type InputPropsType = TextInputProps &
   Partial<{
     onChangeDateTimeText(params: { date: string; time: string }): void;
   }>;
 
-type InputProps = { type: string; inputProps: InputPropsType };
+interface InputProps {
+  type: string;
+  inputProps: InputPropsType;
+}
 
-type ButtonProps = {
+interface ButtonProps {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   text: string;
   onPress(event: GestureResponderEvent): void;
-};
+}
 
-type PropsType = {
+export interface PropsType {
   inputProps: InputProps['inputProps'];
   buttonProps?: ButtonProps;
+  labelFont?: FontFamily;
   labelStyle?: StyleProp<TextStyle>;
   inputWrapStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
   type: string;
   label: string;
-};
+}
 
 function Input({ type, inputProps }: InputProps) {
   switch (type) {
@@ -58,6 +60,7 @@ function DateTimeInput(props: InputPropsType) {
     <View style={styles.dateTimeWrap}>
       <TextInput
         {...props}
+        style={[styles.defaultInput, props.style]}
         onChangeText={(text: string) => {
           const { onChangeDateTimeText } = props;
           onChangeDateTimeText && onChangeDateTimeText({ date: text, time });
@@ -66,7 +69,7 @@ function DateTimeInput(props: InputPropsType) {
       />
       <TextInput
         {...props}
-        style={[props.style, styles.dateTimeInput2]}
+        style={[styles.defaultInput, props.style, styles.dateTimeInput2]}
         onChangeText={(text: string) => {
           const { onChangeDateTimeText } = props;
           onChangeDateTimeText && onChangeDateTimeText({ date, time: text });
@@ -78,11 +81,11 @@ function DateTimeInput(props: InputPropsType) {
 }
 
 function TextInputWrapper(props: InputPropsType) {
-  return <TextInput {...props} />;
+  return <TextInput {...props} style={[styles.defaultInput, props.style]} />;
 }
 
 function LocationInput(props: InputPropsType) {
-  return <TextInput {...props} />;
+  return <TextInput {...props} style={[styles.defaultInput, props.style]} />;
 }
 
 function Button(props: ButtonProps) {
@@ -99,6 +102,7 @@ function Button(props: ButtonProps) {
 
 function InputRow({
   label,
+  labelFont,
   labelStyle,
   inputWrapStyle,
   type,
@@ -109,7 +113,9 @@ function InputRow({
   return (
     <View style={[styles.container, containerStyle || {}]}>
       <View>
-        <TemplateText familyType="power" style={labelStyle || {}}>
+        <TemplateText
+          familyType={labelFont || 'power'}
+          style={labelStyle || {}}>
           {label}
         </TemplateText>
       </View>
@@ -120,22 +126,5 @@ function InputRow({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  inputWrap: {
-    flexDirection: 'row',
-  },
-  dateTimeWrap: { flexDirection: 'row' },
-  dateTimeInput2: { marginLeft: 10 },
-  button: {
-    ...mixinStyles.flexCenter,
-    height: '100%',
-    borderRadius: 4,
-  },
-});
 
 export default InputRow;

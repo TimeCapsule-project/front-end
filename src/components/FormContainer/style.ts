@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { mixinStyles } from 'assets/styles/mixin';
 import { globalStyles } from 'assets/styles/global';
-import { darkBlue, yellow } from 'assets/styles/colors';
+import { darkBlue, sandGray, yellow } from 'assets/styles/colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -9,13 +9,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
   },
+  headerStyle: {
+    backgroundColor: sandGray,
+  },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   titleText: {
-    fontFamily: 'GangwonEduAllBold',
+    letterSpacing: 2,
     fontSize: 18,
+    color: 'black',
   },
   logo: {
     alignItems: 'center',

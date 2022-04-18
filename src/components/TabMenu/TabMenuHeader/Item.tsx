@@ -3,10 +3,10 @@ import {
   Image,
   ImageSourcePropType,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import TemplateText from 'components/TemplateText';
 import { darkBlue } from '../../../assets/styles/colors';
 import { mixinStyles } from '../../../assets/styles/mixin';
 
@@ -17,7 +17,7 @@ export type TabMenuHeaderItemInfo = {
     width: number;
     height: number;
   };
-  text: string;
+  texts: string[];
 };
 
 type ComponentProps = {
@@ -26,6 +26,36 @@ type ComponentProps = {
 };
 
 type TabMenuHeaderItemProps = TabMenuHeaderItemInfo & Partial<ComponentProps>;
+
+function TabMenuHeaderItem({
+  imgInfo,
+  texts,
+  isActive,
+  onPress,
+}: TabMenuHeaderItemProps) {
+  return (
+    <TouchableOpacity onPress={onPress} style={styles.container}>
+      <View style={styles.imageWrap}>
+        <Image
+          source={
+            isActive ? imgInfo.activeImgSource : imgInfo.inActiveImgSource
+          }
+          style={{ width: imgInfo.width, height: imgInfo.height }}
+          width={imgInfo.width}
+          height={imgInfo.height}
+        />
+      </View>
+      <View style={styles.texts}>
+        {texts.map((text: string, i: React.Key) => (
+          <TemplateText familyType="power" style={styles.text} key={i}>
+            {text}
+          </TemplateText>
+        ))}
+      </View>
+      <View style={isActive ? styles.bottomLine : styles.bottomLineNone} />
+    </TouchableOpacity>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -36,15 +66,19 @@ const styles = StyleSheet.create({
     height: 86,
     paddingTop: 13,
   },
-  text: {
+  imageWrap: {
+    ...mixinStyles.flexCenter,
+    width: 45,
+    height: 45,
+  },
+  texts: {
     paddingTop: 5,
-    width: 50,
-    fontSize: 10,
     paddingBottom: 9,
+  },
+  text: {
+    fontSize: 10,
     color: darkBlue,
     textAlign: 'center',
-    fontWeight: 'bold',
-    fontFamily: 'GangwonEduAllBold',
   },
   bottomLine: {
     position: 'absolute',
@@ -56,25 +90,5 @@ const styles = StyleSheet.create({
   },
   bottomLineNone: {},
 });
-
-function TabMenuHeaderItem({
-  imgInfo,
-  text,
-  isActive,
-  onPress,
-}: TabMenuHeaderItemProps) {
-  return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
-      <Image
-        source={isActive ? imgInfo.activeImgSource : imgInfo.inActiveImgSource}
-        style={{ width: imgInfo.width, height: imgInfo.height }}
-        width={imgInfo.width}
-        height={imgInfo.height}
-      />
-      <Text style={styles.text}>{text}</Text>
-      <View style={isActive ? styles.bottomLine : styles.bottomLineNone} />
-    </TouchableOpacity>
-  );
-}
 
 export default TabMenuHeaderItem;

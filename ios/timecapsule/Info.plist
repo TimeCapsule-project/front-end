@@ -53,9 +53,9 @@
 	<false/>
 	<key>UIAppFonts</key>
 	<array>
-		<string>GangwonEduAllBold.woff2</string>
-		<string>GangwonEduAllLight.woff2</string>
-		<string>GangwonEduPower.woff2</string>
+		<string>GangwonEduAllBold.ttf</string>
+		<string>GangwonEduAllLight.ttf</string>
+		<string>GangwonEduPower.ttf</string>
 	</array>
 </dict>
 </plist>

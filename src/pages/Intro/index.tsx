@@ -50,7 +50,9 @@ function Intro(props: PropsType) {
   return (
     <View style={styles.container}>
       <Image source={require(thumbnailSource)} />
-      <Text style={styles.title}>{'황금두더지'}</Text>
+      <TemplateText familyType="bold" style={styles.title}>
+        {'황   금   두   더   지'}
+      </TemplateText>
       <View style={styles.signIn}>
         <TextInput
           style={styles.input}
@@ -93,9 +95,9 @@ const styles = StyleSheet.create({
     ...mixinStyles.flexCenter,
   },
   title: {
+    color: 'black',
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 24,
+    marginVertical: 24,
   },
   signIn: {
     width: '100%',
