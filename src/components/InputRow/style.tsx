@@ -8,10 +8,29 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   inputWrap: {
+    position: 'relative',
     flexDirection: 'row',
   },
   defaultInput: {
     backgroundColor: 'white',
+  },
+  icon: {
+    position: 'absolute',
+    left: 15,
+    top: '25%',
+    zIndex: 1,
+  },
+  switchWrap: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 30,
+    marginBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#C2AD5C',
+  },
+  switchLabel: {
+    color: darkBlue,
   },
   dateTimeWrap: { flexDirection: 'row' },
   dateTimeInput2: { marginLeft: 10 },

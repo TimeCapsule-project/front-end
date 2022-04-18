@@ -2,21 +2,19 @@ import React from 'react';
 import InputRow, { PropsType } from './index';
 import { templateStyles } from './style';
 
-const commonOptions = {
-  containerStyle: templateStyles.inputContainer,
-  labelStyle: templateStyles.inputLabelStyle,
-  inputWrapStyle: templateStyles.inputWrap,
-  type: 'text',
-};
+type TextInputTemplatePropsType = Omit<PropsType, 'type'>
 
-export function TextInputTemplate(props: Omit<PropsType, 'type'>) {
+export function TextInputTemplate(props: TextInputTemplatePropsType) {
   return (
     <InputRow
-      {...commonOptions}
       {...props}
+      type="text"
+      labelStyle={[templateStyles.inputLabelStyle, props?.labelStyle]}
+      inputWrapStyle={[templateStyles.inputWrap, props?.inputWrapStyle]}
+      containerStyle={[templateStyles.inputContainer, props?.containerStyle]}
       inputProps={{
-        style: [templateStyles.input, props.inputProps?.style],
         ...props.inputProps,
+        style: [templateStyles.input, props.inputProps?.style],
       }}
     />
   );

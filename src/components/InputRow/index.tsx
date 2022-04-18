@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   GestureResponderEvent,
   StyleProp,
+  Switch,
   TextInput,
   TextInputProps,
   TextStyle,
@@ -30,14 +31,20 @@ interface ButtonProps {
 }
 
 export interface PropsType {
+  type: string;
+  label: string;
   inputProps: InputProps['inputProps'];
   buttonProps?: ButtonProps;
   labelFont?: FontFamily;
   labelStyle?: StyleProp<TextStyle>;
   inputWrapStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
-  type: string;
-  label: string;
+  switchInfo?: {
+    label: string;
+    value: boolean;
+    onSwitch: (active: boolean) => void;
+  };
+  iconComponentFunc?: () => JSX.Element;
 }
 
 function Input({ type, inputProps }: InputProps) {
@@ -109,7 +116,10 @@ function InputRow({
   inputProps,
   buttonProps,
   containerStyle,
+  iconComponentFunc,
+  switchInfo,
 }: PropsType) {
+  const Icon = iconComponentFunc;
   return (
     <View style={[styles.container, containerStyle || {}]}>
       <View>
@@ -119,7 +129,26 @@ function InputRow({
           {label}
         </TemplateText>
       </View>
+      {switchInfo && (
+        <View style={styles.switchWrap}>
+          <TemplateText familyType="bold" style={styles.switchLabel}>
+            {switchInfo.label}
+          </TemplateText>
+          <Switch
+            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            thumbColor={switchInfo.value ? "#f5dd4b" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={switchInfo.onSwitch}
+            value={switchInfo.value}
+          />
+        </View>
+      )}
       <View style={[styles.inputWrap, inputWrapStyle || {}]}>
+        {Icon && (
+          <View style={styles.icon}>
+            <Icon />
+          </View>
+        )}
         <Input type={type} inputProps={inputProps} />
         {buttonProps && <Button {...buttonProps} />}
       </View>

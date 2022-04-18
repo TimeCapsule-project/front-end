@@ -17,18 +17,11 @@ interface PropsType {
 function SelectCapsule({ updateColor }: PropsType) {
   return (
     <View style={styles.container}>
-      <Image
-        width={140}
-        height={155}
-        source={require('assets/images/capsule.png')}
-      />
+      <Image style={styles.img} source={require('assets/images/capsule.png')} />
       <View style={styles.colorPickers}>
         {colors.map((_color: string) => (
-          <TouchableOpacity onPress={() => updateColor(_color)}>
-            <View
-              key={_color}
-              style={[styles.color, { backgroundColor: _color }]}
-            />
+          <TouchableOpacity key={_color} onPress={() => updateColor(_color)}>
+            <View style={[styles.color, { backgroundColor: _color }]} />
           </TouchableOpacity>
         ))}
       </View>
@@ -55,6 +48,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
   },
-})
+  img: { width: 140, height: 155 },
+});
 
 export default SelectCapsule;
