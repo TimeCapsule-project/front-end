@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   GestureResponderEvent,
   StyleProp,
@@ -11,16 +11,24 @@ import {
   ViewStyle,
 } from 'react-native';
 import TemplateText, { FontFamily } from 'components/TemplateText';
+import DateTimePickerModal, {
+  PickerMode,
+  DateTimeType,
+} from 'components/DateTimePickerModal';
 import { styles } from './style';
 
 type InputPropsType = TextInputProps &
   Partial<{
-    onChangeDateTimeText(params: { date: string; time: string }): void;
+    onChangeDateTimeText(params: DateTimeType): void;
   }>;
 
 interface InputProps {
   type: string;
   inputProps: InputPropsType;
+  dateTimeOptions?: {
+    disableType?: PickerMode;
+    onChange: (data: Partial<DateTimeType>) => void;
+  };
 }
 
 interface ButtonProps {
@@ -34,6 +42,7 @@ export interface PropsType {
   type: string;
   label: string;
   inputProps: InputProps['inputProps'];
+  dateTimeOptions?: InputProps['dateTimeOptions'];
   buttonProps?: ButtonProps;
   labelFont?: FontFamily;
   labelStyle?: StyleProp<TextStyle>;
@@ -47,41 +56,30 @@ export interface PropsType {
   iconComponentFunc?: () => JSX.Element;
 }
 
-function Input({ type, inputProps }: InputProps) {
+function Input({ type, inputProps, dateTimeOptions }: InputProps) {
   switch (type) {
     case 'map':
       return <LocationInput {...inputProps} />;
     case 'dateTime':
-      return <DateTimeInput {...inputProps} />;
+      return <DateTimeInput {...inputProps} options={dateTimeOptions} />;
     case 'text':
     default:
       return <TextInputWrapper {...inputProps} />;
   }
 }
 
-function DateTimeInput(props: InputPropsType) {
-  const [date, setDate] = useState<string>('');
-  const [time, setTime] = useState<string>('');
-
+function DateTimeInput(
+  props: InputPropsType & { options: InputProps['dateTimeOptions'] },
+) {
   return (
     <View style={styles.dateTimeWrap}>
-      <TextInput
-        {...props}
+      <DateTimePickerModal
         style={[styles.defaultInput, props.style]}
-        onChangeText={(text: string) => {
-          const { onChangeDateTimeText } = props;
-          onChangeDateTimeText && onChangeDateTimeText({ date: text, time });
-          setDate(text);
-        }}
-      />
-      <TextInput
-        {...props}
-        style={[styles.defaultInput, props.style, styles.dateTimeInput2]}
-        onChangeText={(text: string) => {
-          const { onChangeDateTimeText } = props;
-          onChangeDateTimeText && onChangeDateTimeText({ date, time: text });
-          setTime(text);
-        }}
+        onChange={
+          props.options?.onChange ||
+          ((data: Partial<DateTimeType>) => console.log(data))
+        }
+        disableType={props.options?.disableType}
       />
     </View>
   );
@@ -115,6 +113,7 @@ function InputRow({
   type,
   inputProps,
   buttonProps,
+  dateTimeOptions,
   containerStyle,
   iconComponentFunc,
   switchInfo,
@@ -135,9 +134,9 @@ function InputRow({
             {switchInfo.label}
           </TemplateText>
           <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={switchInfo.value ? "#f5dd4b" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
+            trackColor={{ false: '#E2E2E2', true: '#6DDA47' }}
+            thumbColor={'#ffffff'}
+            ios_backgroundColor="#E2E2E2"
             onValueChange={switchInfo.onSwitch}
             value={switchInfo.value}
           />
@@ -149,7 +148,11 @@ function InputRow({
             <Icon />
           </View>
         )}
-        <Input type={type} inputProps={inputProps} />
+        <Input
+          type={type}
+          inputProps={inputProps}
+          dateTimeOptions={dateTimeOptions}
+        />
         {buttonProps && <Button {...buttonProps} />}
       </View>
     </View>

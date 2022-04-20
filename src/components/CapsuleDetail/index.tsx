@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     paddingHorizontal: 25,
-    paddingBottom: Dimensions.get('window').height * 0.125,
+    paddingBottom: Dimensions.get('screen').height * 0.125,
   },
   anyWhereCard: {
     flex: 1,

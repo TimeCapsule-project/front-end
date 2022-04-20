@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
   switchLabel: {
     color: darkBlue,
   },
-  dateTimeWrap: { flexDirection: 'row' },
+  dateTimeWrap: { flex: 1, flexDirection: 'row' },
   dateTimeInput2: { marginLeft: 10 },
   button: {
     ...mixinStyles.flexCenter,
