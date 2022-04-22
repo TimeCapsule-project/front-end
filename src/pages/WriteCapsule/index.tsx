@@ -1,23 +1,25 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 import { getFont } from 'utils/getFont';
+import { getParsedDate } from 'utils/getParsedDate';
+import { mixinStyles } from 'assets/styles/mixin';
 import { darkBlue, yellow } from 'assets/styles/colors';
 import { RootStackParamList } from 'pages/routes';
+import { DateTimeType } from 'components/DateTimePickerModal';
 import {
   DateTimeInputTemplate,
   TextInputTemplate,
 } from 'components/InputRow/template';
 import People from 'components/SvgComponents/people';
+import Search from 'components/SvgComponents/search';
 import SmallPencel from 'components/SvgComponents/smallPencel';
 import RouteHeader from 'components/RouteHeader';
 import SelectCapsule from 'components/SelectCapsule';
 import TemplateText from 'components/TemplateText';
-import { mixinStyles } from 'assets/styles/mixin';
-import { DateTimeType } from 'components/DateTimePickerModal';
 
 type WriteCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -33,22 +35,29 @@ function WriteCapsule() {
   const navigation = useNavigation<WriteCapsuleScreenNavigationProp>();
   const route = useRoute<WriteCapsuleScreenRouteProp>();
 
+  const initDateData = useMemo(() => {
+    const origin = new Date();
+    return { origin: new Date(), data: getParsedDate(origin) }
+  }, []);
+
   const [color, setColor] = useState<string>('#40a629');
   const [content, setContent] = useState<string>('');
-  const [dateTime, setDateTime] = useState<Partial<DateTimeType>>({});
+  const [dateTime, setDateTime] = useState<DateTimeType>(initDateData.data);
   const [isEnableNickname, setEnableNickname] = useState<boolean>(false);
   const [isEnableAllDay, setEnableAllDay] = useState<boolean>(false);
+  const [to, setTo] = useState<string>('');
+  const [from, setFrom] = useState<string>('');
 
   const _goPreview = useCallback(
     () =>
       navigation.navigate('WriteCapsulePreview', {
-        data: { content, date: dateTime, time, to, from },
+        data: { content, date: dateTime, to, from, color },
       }),
-    [content, date, navigation, time],
+    [content, dateTime, navigation, from, to, color],
   );
 
   const _onChangeDate = useCallback(
-    (data: Partial<DateTimeType>) => data && setDateTime(data),
+    (data: DateTimeType) => data && setDateTime(data),
     [],
   );
 
@@ -68,6 +77,7 @@ function WriteCapsule() {
             editable: false,
             placeholder: '닉네임 검색하기',
             style: styles.input,
+            onChangeText: setTo,
           }}
           containerStyle={styles.inputContainer}
         />
@@ -80,11 +90,13 @@ function WriteCapsule() {
                   editable: false,
                   value: '입 짧은 햇님',
                   style: styles.inputNickname,
+                  onChangeText: setFrom,
                 }
               : {
                   editable: true,
                   placeholder: '직접 입력',
                   style: styles.input,
+                  onChangeText: setFrom,
                 }
           }
           containerStyle={styles.inputContainerMargin}
@@ -94,7 +106,17 @@ function WriteCapsule() {
             onSwitch: setEnableNickname,
           }}
         />
-        {}
+        {route.params.type === 'special' && (
+          <TextInputTemplate
+            label={'캡슐 장소 설정하기'}
+            iconComponentFunc={Search}
+            inputProps={{
+              editable: false,
+              placeholder: '지번, 도로명, 건물명으로 검색',
+              style: styles.input,
+            }}
+          />
+        )}
         <DateTimeInputTemplate
           label={'캡슐 개봉 날짜/시간 정하기'}
           inputWrapStyle={styles.inputDateTimeWrap}
@@ -103,6 +125,7 @@ function WriteCapsule() {
           }}
           dateTimeOptions={{
             disableType: isEnableAllDay ? 'time' : undefined,
+            defaultDate: initDateData.origin,
             onChange: _onChangeDate,
           }}
           switchInfo={{

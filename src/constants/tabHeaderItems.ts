@@ -10,10 +10,10 @@ export default [
   },
   {
     imgInfo: {
-      activeImgSource: require('../assets/images/capsule.png'),
+      activeImgSource: require('../assets/images/capsuleMini.png'),
       inActiveImgSource: require('../assets/images/inActiveCapsule.png'),
-      width: 37,
-      height: 40,
+      width: 48,
+      height: 46,
     },
     texts: ['도착한 캡슐', `${10}개`],
   },

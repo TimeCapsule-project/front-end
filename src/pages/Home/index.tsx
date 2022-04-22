@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo } from 'react';
+import { PermissionsAndroid, StyleSheet, View } from 'react-native';
 import { sandGray } from '../../assets/styles/colors';
 import Header from '../../components/Header';
 import TabMenu from '../../components/TabMenu';
@@ -36,6 +36,10 @@ const styles = StyleSheet.create({
 type PropsType = { navigation: any };
 
 function Home({ navigation }: PropsType) {
+  useEffect(() => {
+
+  }, [])
+
   const listItems = useMemo(() => {
     return Array.from({ length: 25 }, () => MOCK_ITEM);
   }, []);

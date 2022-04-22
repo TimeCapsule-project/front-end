@@ -1,13 +1,19 @@
-import React from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const colors = [
-  '#216B76',
-  '#FF3737',
-  '#63F3F3',
-  '#E7A54E',
-  '#9D00C5',
-  '#FFC0D3',
+  { color: '#216B76', source: require('assets/images/capsules/0.png') },
+  { color: '#FF3737', source: require('assets/images/capsules/1.png') },
+  { color: '#63F3F3', source: require('assets/images/capsules/2.png') },
+  { color: '#E7A54E', source: require('assets/images/capsules/3.png') },
+  { color: '#9D00C5', source: require('assets/images/capsules/4.png') },
+  { color: '#FFC0D3', source: require('assets/images/capsules/5.png') },
 ];
 
 interface PropsType {
@@ -15,13 +21,20 @@ interface PropsType {
 }
 
 function SelectCapsule({ updateColor }: PropsType) {
+  const [source, setSource] = useState<ImageSourcePropType>(colors[0].source);
+
   return (
     <View style={styles.container}>
-      <Image style={styles.img} source={require('assets/images/capsule.png')} />
+      <Image style={styles.img} source={source} />
       <View style={styles.colorPickers}>
-        {colors.map((_color: string) => (
-          <TouchableOpacity key={_color} onPress={() => updateColor(_color)}>
-            <View style={[styles.color, { backgroundColor: _color }]} />
+        {colors.map(({ color, source: _source }) => (
+          <TouchableOpacity
+            key={color}
+            onPress={() => {
+              setSource(_source);
+              updateColor(color);
+            }}>
+            <View style={[styles.color, { backgroundColor: color }]} />
           </TouchableOpacity>
         ))}
       </View>
@@ -48,7 +61,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
   },
-  img: { width: 140, height: 155 },
+  img: { width: 167, height: 167 },
 });
 
 export default SelectCapsule;

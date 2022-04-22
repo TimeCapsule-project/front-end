@@ -14,6 +14,15 @@ import { darkBlue, yellow } from 'assets/styles/colors';
 import { RootStackParamList } from 'pages/routes';
 import RouteHeader from 'components/RouteHeader';
 import TemplateText from 'components/TemplateText';
+import { DateTimeType } from 'components/DateTimePickerModal';
+
+export type PreviewData = {
+  content?: string;
+  date: DateTimeType;
+  to: string;
+  from: string;
+  color: string;
+}
 
 type WriteCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -61,14 +70,18 @@ function WriteCapsule() {
         <View style={styles.contentView}>
           <View>
             <TemplateText familyType="power" style={styles.usuableDateText}>
-              {`${'2022.05.05. 오후 6:00'} 이후 개봉 가능`}
+              {`${params.data?.date.date}. ${params.data?.date.time} 이후 개봉 가능`}
             </TemplateText>
-            <PersonText person={'스타벅스'} label="To. " />
+            <PersonText person={params.data?.to} label="To. " />
             <TemplateText familyType="bold" style={styles.contentText}>
               {params.data?.content || '입력한 내용이 없습니다.'}
             </TemplateText>
           </View>
-          <PersonText person={'내가 누구게'} label="From. " aligh="flex-end" />
+          <PersonText
+            person={params.data?.from}
+            label="From. "
+            aligh="flex-end"
+          />
         </View>
         <TouchableOpacity
           style={styles.submitButton}

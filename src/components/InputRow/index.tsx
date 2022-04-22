@@ -27,7 +27,8 @@ interface InputProps {
   inputProps: InputPropsType;
   dateTimeOptions?: {
     disableType?: PickerMode;
-    onChange: (data: Partial<DateTimeType>) => void;
+    defaultDate?: Date;
+    onChange: (data: DateTimeType) => void;
   };
 }
 
@@ -76,10 +77,10 @@ function DateTimeInput(
       <DateTimePickerModal
         style={[styles.defaultInput, props.style]}
         onChange={
-          props.options?.onChange ||
-          ((data: Partial<DateTimeType>) => console.log(data))
+          props.options?.onChange || ((data: DateTimeType) => console.log(data))
         }
         disableType={props.options?.disableType}
+        defaultValue={props.options?.defaultDate}
       />
     </View>
   );

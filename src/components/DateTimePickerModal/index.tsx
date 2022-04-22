@@ -12,6 +12,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import TemplateText from 'components/TemplateText';
+import { getParsedDate } from 'utils/getParsedDate';
 
 dayjs.locale('ko');
 
@@ -39,7 +40,7 @@ interface PropsType {
   style?: StyleProp<ViewStyle>;
   disableType?: PickerMode;
   defaultValue?: Date;
-  onChange: (value: Partial<State>) => void;
+  onChange: (value: State) => void;
 };
 
 const reducer = (state: State, action: Action) => {
@@ -53,14 +54,6 @@ const reducer = (state: State, action: Action) => {
     default:
       return state;
   }
-};
-
-const getParsedDate = (value?: Date) => {
-  const _date = dayjs(value || undefined);
-  return {
-    date: _date.format('YYYY.MM.DD'),
-    time: _date.format('A HH:mm'),
-  };
 };
 
 function DateTimePickerModal({
@@ -85,10 +78,10 @@ function DateTimePickerModal({
         let data = getParsedDate(selectedDate || originDate);
         if (disableType === 'date') {
           dispatch({ type: 'TIME', value: data.time });
-          onChange({ time: data.time });
+          onChange({ date: '', time: data.time });
         } else if (disableType === 'time') {
           dispatch({ type: 'DATE', value: data.date });
-          onChange({ date: data.date });
+          onChange({ date: data.date, time: '' });
         } else {
           dispatch({ type: 'ALL', value: data });
           onChange(data);
