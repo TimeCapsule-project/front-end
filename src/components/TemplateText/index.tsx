@@ -1,13 +1,15 @@
 import React, { useCallback } from 'react';
 import { Text, TextProps } from 'react-native';
-
-export type FontFamily = 'power' | 'bold' | 'light';
-
-type PropsType = {
+interface PropsType {
   familyType?: FontFamily;
 };
 
-const TemplateText: React.FC<PropsType & TextProps> = props => {
+export type FontFamily = 'power' | 'bold' | 'light';
+
+export type TemplateTextProps = React.FC<PropsType & TextProps>;
+
+
+const TemplateText: TemplateTextProps = props => {
   const { familyType, children } = props;
 
   const fontFamilyParser = useCallback(() => {

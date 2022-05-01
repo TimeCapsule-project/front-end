@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo } from 'react';
-import { PermissionsAndroid, StyleSheet, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { sandGray } from '../../assets/styles/colors';
 import Header from '../../components/Header';
 import TabMenu from '../../components/TabMenu';
 
 import ListView from '../../components/ListView';
 import tabHeaderItems from '../../constants/tabHeaderItems';
-import CapsuleDetail from '../../components/CapsuleDetail';
+import CapsuleTypeSwiper from '../../components/CapsuleTypeSwiper';
 
 const MOCK_ITEM = {
   date: '2022.03.27 11:30',
@@ -36,10 +36,6 @@ const styles = StyleSheet.create({
 type PropsType = { navigation: any };
 
 function Home({ navigation }: PropsType) {
-  useEffect(() => {
-
-  }, [])
-
   const listItems = useMemo(() => {
     return Array.from({ length: 25 }, () => MOCK_ITEM);
   }, []);
@@ -52,7 +48,7 @@ function Home({ navigation }: PropsType) {
     () => [
       <ListView items={listItems} onEndReached={() => {}} />,
       <ListView items={listItems2} onEndReached={() => {}} />,
-      <CapsuleDetail navigation={navigation} />,
+      <CapsuleTypeSwiper navigation={navigation} />,
     ],
     [listItems, listItems2, navigation],
   );

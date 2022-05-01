@@ -5,6 +5,7 @@ import Swiper from 'react-native-swiper';
 
 import { mixinStyles } from '../../assets/styles/mixin';
 import { darkBlue, sandGray } from '../../assets/styles/colors';
+import { setLocationPermission } from 'utils/permission/permissionUtil';
 import { RootStackParamList } from '../../pages/routes';
 import TemplateText from '../../components/TemplateText';
 
@@ -65,16 +66,20 @@ const RenderSwiper = React.memo(function ({
   );
 });
 
-function CapsuleDetail({ navigation }: PropsType) {
+function CapsuleTypeSwiper({ navigation }: PropsType) {
   const [index, setIndex] = useState<number>(0);
 
   const _onIndexChanged = useCallback((_index: number) => setIndex(_index), []);
 
-  const goWriteCapsule = useCallback(
-    (_index: number) =>
-      navigation.navigate('WriteCapsule', {
-        type: _index === 0 ? 'anywhere' : 'special',
-      }),
+  const _goWriteCapsule = useCallback(
+    async (_index: number) => {
+      if (_index === 1) {
+        return setLocationPermission(() =>
+          navigation.navigate('WriteCapsule', { type: 'special' }),
+        );
+      }
+      navigation.navigate('WriteCapsule', { type: 'anywhere' });
+    },
     [navigation],
   );
 
@@ -83,7 +88,7 @@ function CapsuleDetail({ navigation }: PropsType) {
       <RenderSwiper onIndexChanged={_onIndexChanged} />
       <TouchableOpacity
         style={styles.button}
-        onPress={() => goWriteCapsule(index)}>
+        onPress={() => _goWriteCapsule(index)}>
         <TemplateText familyType="power" style={styles.buttonText}>
           {'선택하기'}
         </TemplateText>
@@ -144,4 +149,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CapsuleDetail;
+export default CapsuleTypeSwiper;

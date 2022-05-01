@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('screen').width - 57,
     paddingRight: 13,
     marginLeft: -10,
+    fontSize: 18,
     color: darkBlue,
   },
 });

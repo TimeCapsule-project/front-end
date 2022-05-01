@@ -37,7 +37,7 @@ function WriteCapsule() {
 
   const initDateData = useMemo(() => {
     const origin = new Date();
-    return { origin: new Date(), data: getParsedDate(origin) }
+    return { origin: new Date(), data: getParsedDate(origin) };
   }, []);
 
   const [color, setColor] = useState<string>('#40a629');
@@ -54,6 +54,11 @@ function WriteCapsule() {
         data: { content, date: dateTime, to, from, color },
       }),
     [content, dateTime, navigation, from, to, color],
+  );
+
+  const _goLocation = useCallback(
+    () => navigation.navigate('LocationCapsule'),
+    [navigation],
   );
 
   const _onChangeDate = useCallback(
@@ -107,15 +112,17 @@ function WriteCapsule() {
           }}
         />
         {route.params.type === 'special' && (
-          <TextInputTemplate
-            label={'캡슐 장소 설정하기'}
-            iconComponentFunc={Search}
-            inputProps={{
-              editable: false,
-              placeholder: '지번, 도로명, 건물명으로 검색',
-              style: styles.input,
-            }}
-          />
+          <TouchableOpacity onPress={_goLocation} style={styles.locationButton}>
+            <TextInputTemplate
+              label={'캡슐 장소 설정하기'}
+              iconComponentFunc={Search}
+              inputProps={{
+                editable: false,
+                placeholder: '지번, 도로명, 건물명으로 검색',
+                style: styles.input,
+              }}
+            />
+          </TouchableOpacity>
         )}
         <DateTimeInputTemplate
           label={'캡슐 개봉 날짜/시간 정하기'}
@@ -193,6 +200,9 @@ const styles = StyleSheet.create({
   inputTextArea: {
     textAlignVertical: 'top',
     fontFamily: getFont('bold'),
+  },
+  locationButton: {
+    width: '100%',
   },
   previewButton: {
     ...mixinStyles.flexCenter,
