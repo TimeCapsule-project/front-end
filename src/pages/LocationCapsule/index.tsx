@@ -4,15 +4,16 @@ import { WebView } from 'react-native-webview';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+import { onMessage, OnMessageParam } from 'utils/onMessage';
+import { mixinStyles } from 'assets/styles/mixin';
+import { defaultStyles } from 'assets/styles/default';
 import { darkBlue, yellow } from 'assets/styles/colors';
 import { RootStackParamList } from 'pages/routes';
 import CustomModal from 'components/CustomModal';
 import RouteHeader from 'components/RouteHeader';
 import TemplateText from 'components/TemplateText';
-import MyPosition from 'components/SvgComponents/myPosition';
 import Poi from 'components/SvgComponents/poi';
-import { mixinStyles } from 'assets/styles/mixin';
-import { defaultStyles } from 'assets/styles/default';
+import MyPosition from 'components/SvgComponents/myPosition';
 
 type LocationCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -31,8 +32,13 @@ function LocationCapsule() {
   const route = useRoute<LocationCapsuleScreenRouteProp>();
 
   const [visible, setVisible] = useState<boolean>(false);
+  const [address, setAddress] = useState<string>('');
 
   const _onPressSubmit = useCallback(() => setVisible(true), []);
+
+  const _onMessage = useCallback((message: OnMessageParam) => {
+    onMessage(message, (data: any) => setAddress(data));
+  }, []);
 
   const _modalContentRenderer = useCallback(() => {
     return (
@@ -46,11 +52,11 @@ function LocationCapsule() {
           source={require('../../assets/images/thumbnail.png')}
         />
         <TemplateText familyType="power" style={styles.modalAddressText}>
-          {'주소 테스트으으으으으으'}
+          {address}
         </TemplateText>
       </View>
     );
-  }, []);
+  }, [address]);
 
   return (
     <View style={styles.container}>
@@ -73,7 +79,11 @@ function LocationCapsule() {
       <WebView
         containerStyle={styles.webviewContainer}
         source={{ uri: webviewUrl }}
-        javaScriptEnabled={true}
+        onMessage={_onMessage}
+        // onError={(msg: any) => console.log(msg)}
+        // onHttpError={(msg: any) => console.log(msg)}
+        javaScriptEnabled={true} // JS 통신하기 위함
+        geolocationEnabled={true} // GPS 현재 위치 받아오기 위함
       />
       <View>
         <TouchableOpacity onPress={() => {}} style={styles.myPositionButton}>
@@ -81,7 +91,7 @@ function LocationCapsule() {
         </TouchableOpacity>
         <View style={styles.bottonCard}>
           <TemplateText familyType="power" style={styles.text}>
-            {'경기 팔달구 월드컵로 46'}
+            {address}
           </TemplateText>
           <TemplateText
             familyType="bold"

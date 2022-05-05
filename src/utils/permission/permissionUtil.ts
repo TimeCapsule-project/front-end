@@ -1,7 +1,7 @@
 import { checkLocationPermission } from './checkPermissions';
 import { requestLocationPermission } from './requestPermissions';
 
-export const setLocationPermission = async (callback: () => void) => {
+export const activeLocationPermission = async (callback: () => void) => {
   if (await checkLocationPermission()) {
     return callback();
   }

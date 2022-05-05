@@ -16,12 +16,14 @@ const commonOptions = {
   type: 'text',
 };
 
-type PropsType = {
+type AccountInfoData = { id: string; password: string };
+
+interface PropsType {
   navigation: NativeStackNavigationProp<
     RootStackParamList,
     'SignUp/AccountInfoStep'
   >;
-};
+}
 
 function AccountInfoStep({ navigation }: PropsType) {
   const [id, setId] = useState<string>('');
@@ -29,8 +31,8 @@ function AccountInfoStep({ navigation }: PropsType) {
   const [checkPassword, setCheckPassword] = useState<string>('');
 
   const nextBtnPress = useCallback(
-    () => navigation.navigate('SignUp/SignInfoStep'),
-    [navigation],
+    () => navigation.navigate('SignUp/SignInfoStep', { id, password }),
+    [id, navigation, password],
   );
 
   const checkDuplID = useCallback(() => {
@@ -70,6 +72,7 @@ function AccountInfoStep({ navigation }: PropsType) {
       <InputRow
         {...commonOptions}
         inputProps={{
+          secureTextEntry: true,
           style: styles.input,
           onChangeText: _onChangeTextPassword,
           placeholder: '비밀번호',
@@ -80,6 +83,7 @@ function AccountInfoStep({ navigation }: PropsType) {
       <InputRow
         {...commonOptions}
         inputProps={{
+          secureTextEntry: true,
           style: styles.input,
           onChangeText: _onChangeTextCheckPassword,
           placeholder: '비밀번호 확인',
@@ -96,4 +100,5 @@ function AccountInfoStep({ navigation }: PropsType) {
   );
 }
 
+export type { AccountInfoData };
 export default AccountInfoStep;

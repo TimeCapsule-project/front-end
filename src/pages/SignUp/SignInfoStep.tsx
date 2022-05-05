@@ -2,12 +2,14 @@ import React, { useCallback, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { RootStackParamList } from '../routes';
 import { validator } from 'utils/validator';
+import { useSignUpMutation } from './hooks/useSignUpMutation';
+import { RootStackParamList } from '../routes';
 import InputRow from 'components/InputRow';
 import TemplateText from 'components/TemplateText';
 import FormContainer from 'components/FormContainer';
 import styles from 'components/FormContainer/style';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 const commonOptions = {
   containerStyle: styles.inputContainer,
@@ -16,22 +18,40 @@ const commonOptions = {
   type: 'text',
 };
 
-type PropsType = {
-  navigation: NativeStackNavigationProp<
-    RootStackParamList,
-    'SignUp/SignInfoStep'
-  >;
-};
+type SignInfoStepNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'SignUp/SignInfoStep'
+>;
 
-function SignInfoStep({ navigation }: PropsType) {
+type SignInfoStepRouteProp = RouteProp<
+  RootStackParamList,
+  'SignUp/SignInfoStep'
+>;
+
+function SignInfoStep() {
+  const navigation = useNavigation<SignInfoStepNavigationProp>();
+  const route = useRoute<SignInfoStepRouteProp>();
+
   const [nickname, setNickname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [authNumber, setAuthNumber] = useState<string>('');
 
-  const doneBtnPress = useCallback(() => {
-    // TODO: CALL LOGIN API
+  const onSuccess = useCallback(() => {
     navigation.navigate('Intro');
   }, [navigation]);
+
+  const { mutate, status, error } = useSignUpMutation(onSuccess);
+
+  const doneBtnPress = useCallback(
+    () =>
+      mutate({
+        userId: route.params.id,
+        userPw: route.params.password,
+        userEmail: email,
+        userNickname: nickname,
+      }),
+    [email, mutate, nickname, route.params.id, route.params.password],
+  );
 
   const checkDuplNickname = useCallback(() => {
     if (validator(nickname, 'id')) {
@@ -58,6 +78,10 @@ function SignInfoStep({ navigation }: PropsType) {
     (text: string) => setAuthNumber(text),
     [],
   );
+
+  if (status === 'error') {
+    console.error(error);
+  }
 
   return (
     <FormContainer backBtnText={'이전 단계'}>

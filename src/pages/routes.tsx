@@ -6,10 +6,10 @@ import Home from './Home';
 import Intro from './Intro';
 import FindPassword from './FindPassword';
 import SignInfoStep from './SignUp/SignInfoStep';
-import AccountInfoStep from './SignUp/AccountInfoStep';
+import AccountInfoStep, { AccountInfoData } from './SignUp/AccountInfoStep';
+import WriteCapsulePreview, { PreviewData } from './WriteCapsule/preview';
 import WriteCapsule from './WriteCapsule';
 import LocationCapsule from './LocationCapsule';
-import WriteCapsulePreview, { PreviewData } from './WriteCapsule/preview';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -18,7 +18,7 @@ export type RootStackParamList = {
   LocationCapsule: undefined;
   WriteCapsule: { type: 'anywhere' | 'special' };
   WriteCapsulePreview: { data: PreviewData };
-  'SignUp/SignInfoStep': undefined;
+  'SignUp/SignInfoStep': AccountInfoData;
   'SignUp/AccountInfoStep': undefined;
 };
 
