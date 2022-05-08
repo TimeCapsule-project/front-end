@@ -1,3 +1,4 @@
+import Toast from 'react-native-root-toast';
 import { useMutation, useQueryClient } from 'react-query';
 import { instance as axios } from 'utils/request';
 
@@ -17,7 +18,12 @@ const useSignUpMutation = (onSuccess: () => void) => {
     {
       onSuccess: () => {
         client.invalidateQueries(['api', 'user']);
+        Toast.show('회원가입에 성공했습니다!');
         onSuccess();
+      },
+      onError: (error: any) => {
+        Toast.show('가입에 실패했습니다.');
+        console.error(error);
       },
     },
   );

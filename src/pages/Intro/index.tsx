@@ -1,19 +1,22 @@
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useState } from 'react';
 import {
   Image,
+  Linking,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useKakaoLogin } from './hooks/useKakaoLogin';
+import { defaultStyles } from 'assets/styles/default';
+import { globalStyles } from 'assets/styles/global';
+import { mixinStyles } from 'assets/styles/mixin';
+import { darkBlue, yellow } from 'assets/styles/colors';
 import { RootStackParamList } from '../routes';
-import { defaultStyles } from '../../assets/styles/default';
-import { globalStyles } from '../../assets/styles/global';
-import { mixinStyles } from '../../assets/styles/mixin';
-import { darkBlue, yellow } from '../../assets/styles/colors';
-import TemplateText from '../../components/TemplateText';
+import TemplateText from 'components/TemplateText';
+import TouchableImage from 'components/TouchableImage';
 
 const thumbnailSource = '../../assets/images/thumbnail.png';
 
@@ -46,6 +49,24 @@ function Intro(props: PropsType) {
     (text: string) => setPassword(text),
     [],
   );
+
+  const _onSuccessGetKakaoLoginUrl = useCallback(async (url: string) => {
+    const redirect = await Linking.getInitialURL();
+    const split = url.split('redirect_uri=');
+    const openUrl = `${split[0]}redirect_uri=${'timecapsuleapp://Intro'}${
+      '&response_type=code' //split[1]
+    }`;
+    console.log(openUrl);
+    await Linking.openURL(openUrl);
+  }, []);
+
+  const { refetch: getKakaoLoginUrl } = useKakaoLogin(
+    _onSuccessGetKakaoLoginUrl,
+  );
+
+  const _onPressKakaoLogin = useCallback(() => {
+    getKakaoLoginUrl();
+  }, [getKakaoLoginUrl]);
 
   return (
     <View style={styles.container}>
@@ -84,6 +105,16 @@ function Intro(props: PropsType) {
             {'새 계정 만들기'}
           </TemplateText>
         </TouchableOpacity>
+        <TouchableImage
+          imgInfo={{
+            source: require('../../assets/images/kakaoLogin.png'),
+            width: 170,
+            height: 45,
+          }}
+          styles={styles.kakaoLoginButtonContainer}
+          imgStyles={styles.kakaoLoginButton}
+          onPress={_onPressKakaoLogin}
+        />
       </View>
     </View>
   );
@@ -126,11 +157,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 45,
   },
-  loginBtn: {
-    ...defaultStyles.button,
-    width: '40%',
-    marginTop: 50,
-  },
   spacingBox: {
     width: '100%',
     height: 1,
@@ -142,8 +168,16 @@ const styles = StyleSheet.create({
     ...defaultStyles.button,
     backgroundColor: darkBlue,
     borderRadius: 4,
-    width: '50%',
+    width: 170,
     height: 45,
+  },
+  kakaoLoginButton: {
+    width: 170,
+    height: 45,
+    borderRadius: 4,
+  },
+  kakaoLoginButtonContainer: {
+    marginTop: 15,
   },
   findPassword: {
     width: '100%',

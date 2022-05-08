@@ -1,15 +1,18 @@
 import React, { useCallback, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 import { validator } from 'utils/validator';
 import { useSignUpMutation } from './hooks/useSignUpMutation';
+import { useVerifyEmailNumber } from './hooks/useVerifyEmailNumber';
+import { useGetVerifyEmailNumber } from './hooks/useGetVerifyEmailNumber';
+import { useCheckDuplicateNickname } from './hooks/useCheckDuplicateNickname';
 import { RootStackParamList } from '../routes';
 import InputRow from 'components/InputRow';
 import TemplateText from 'components/TemplateText';
 import FormContainer from 'components/FormContainer';
 import styles from 'components/FormContainer/style';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 const commonOptions = {
   containerStyle: styles.inputContainer,
@@ -35,53 +38,86 @@ function SignInfoStep() {
   const [nickname, setNickname] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [authNumber, setAuthNumber] = useState<string>('');
+  const [verifiedEmail, setVerifiedEmail] = useState<boolean>(false);
+  const [checkedNickname, setCheckedNickname] = useState<boolean>(false);
+  const [editableEmail, setEditableEmail] = useState<boolean>(true);
+  const [editableNickname, setEditableNickname] = useState<boolean>(true);
 
   const onSuccess = useCallback(() => {
     navigation.navigate('Intro');
   }, [navigation]);
 
-  const { mutate, status, error } = useSignUpMutation(onSuccess);
+  const _onSuccessCheckNickname = useCallback(() => {
+    setEditableNickname(false);
+    setCheckedNickname(true);
+  }, []);
 
-  const doneBtnPress = useCallback(
-    () =>
+  const _onSuccessGetVerifyEmailNumber = useCallback((data: any) => {
+    console.log(data);
+    setAuthNumber(data.code);
+  }, []);
+
+  const _onSuccessVerifyEmail = useCallback(() => {
+    setEditableEmail(true);
+    setVerifiedEmail(true);
+  }, []);
+
+  const { refetch: checkNickname } = useCheckDuplicateNickname(
+    nickname,
+    _onSuccessCheckNickname,
+  );
+
+  const { refetch: getVerifyNumber } = useGetVerifyEmailNumber(
+    email,
+    _onSuccessGetVerifyEmailNumber,
+  );
+
+  const { refetch: verifyNumber } = useVerifyEmailNumber(
+    nickname,
+    _onSuccessVerifyEmail,
+  );
+
+  const { mutate } = useSignUpMutation(onSuccess);
+
+  const doneBtnPress = () => {
+    if (checkedNickname && verifiedEmail) {
       mutate({
         userId: route.params.id,
         userPw: route.params.password,
         userEmail: email,
         userNickname: nickname,
-      }),
-    [email, mutate, nickname, route.params.id, route.params.password],
-  );
+      });
+    }
+  };
 
   const checkDuplNickname = useCallback(() => {
     if (validator(nickname, 'id')) {
-      console.log('isValid And Request checkDuplNickname');
+      checkNickname();
     }
-  }, [nickname]);
+  }, [checkNickname, nickname]);
 
   const getEmailAuthNum = useCallback(
-    () => console.log('Request getEmailAuthNum'),
-    [],
+    () => getVerifyNumber(),
+    [getVerifyNumber],
   );
 
   const checkEmailAuthNumber = useCallback(
-    () => console.log('Request checkEmailAuthNumber'),
-    [],
+    () => verifyNumber(),
+    [verifyNumber],
   );
 
   const _onChangeTextNickname = useCallback(
     (text: string) => setNickname(text),
     [],
   );
-  const _onChangeTextEmail = useCallback((text: string) => setEmail(text), []);
+  const _onChangeTextEmail = useCallback(
+    (text: string) => setEmail(encodeURIComponent(text)),
+    [],
+  );
   const _onChangeTextAuthNumber = useCallback(
     (text: string) => setAuthNumber(text),
     [],
   );
-
-  if (status === 'error') {
-    console.error(error);
-  }
 
   return (
     <FormContainer backBtnText={'이전 단계'}>
@@ -92,6 +128,7 @@ function SignInfoStep() {
           onChangeText: _onChangeTextNickname,
           placeholder: '영문, 숫자 혼합 5자리 이상',
           value: nickname,
+          editable: editableNickname,
         }}
         buttonProps={{
           style: styles.button,
@@ -108,6 +145,7 @@ function SignInfoStep() {
           onChangeText: _onChangeTextEmail,
           placeholder: '이메일을 입력해주세요.',
           value: email,
+          editable: editableEmail,
         }}
         buttonProps={{
           style: styles.button,

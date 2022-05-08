@@ -4,10 +4,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '../routes';
 import { validator } from 'utils/validator';
+import { useCheckDuplicateId } from './hooks/useCheckDuplicateId';
 import InputRow from 'components/InputRow';
 import TemplateText from 'components/TemplateText';
 import FormContainer from 'components/FormContainer';
 import styles from 'components/FormContainer/style';
+import Toast from 'react-native-root-toast';
 
 const commonOptions = {
   containerStyle: styles.inputContainer,
@@ -29,17 +31,29 @@ function AccountInfoStep({ navigation }: PropsType) {
   const [id, setId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [checkPassword, setCheckPassword] = useState<string>('');
+  const [pass, setPass] = useState<boolean>(false);
 
-  const nextBtnPress = useCallback(
-    () => navigation.navigate('SignUp/SignInfoStep', { id, password }),
-    [id, navigation, password],
-  );
+  const _onSuccess = useCallback((data: any) => {
+    if (data?.status === 200) {
+      setPass(true);
+    }
+  }, []);
+
+  const { refetch: checkDuplicateId } = useCheckDuplicateId(id, _onSuccess);
+
+  const nextBtnPress = useCallback(() => {
+    if (!pass) {
+      return Toast.show('아이디의 중복확인을 해주세요!');
+    }
+    navigation.navigate('SignUp/SignInfoStep', { id, password });
+  }, [id, navigation, pass, password]);
 
   const checkDuplID = useCallback(() => {
     if (validator(id, 'id')) {
-      console.log('isValid And Request checkDuplID');
+      return checkDuplicateId();
     }
-  }, [id]);
+    Toast.show('아이디가 유효하지 않습니다.');
+  }, [checkDuplicateId, id]);
 
   const _onChangeTextID = useCallback((text: string) => setId(text), []);
   const _onChangeTextPassword = useCallback(
