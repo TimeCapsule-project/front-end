@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">timecapsule</string>
+    <!-- <string name="kakao_app_key">@string/kakao_native_app_key</string> -->
+    <string name="kakao_app_key">87e2a6cd93832d809cbd2221bca99f8e</string>
 </resources>

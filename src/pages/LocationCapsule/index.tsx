@@ -3,6 +3,8 @@ import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSetRecoilState } from 'recoil';
+import { latLngState } from '../../states/atoms';
 
 import { onMessage, OnMessageParam } from 'utils/onMessage';
 import { mixinStyles } from 'assets/styles/mixin';
@@ -33,11 +35,22 @@ function LocationCapsule() {
 
   const [visible, setVisible] = useState<boolean>(false);
   const [address, setAddress] = useState<string>('');
+  const [latlng, setLatlng] = useState<string>('');
+
+  const setLatLngState = useSetRecoilState(latLngState);
 
   const _onPressSubmit = useCallback(() => setVisible(true), []);
 
+  const _onPressConfirm = useCallback(() => {
+    setLatLngState({ lat: 36, lng: 121212 }); // TODO: change
+    navigation.goBack();
+  }, [navigation, setLatLngState]);
+
   const _onMessage = useCallback((message: OnMessageParam) => {
-    onMessage(message, (data: any) => setAddress(data));
+    onMessage(message, (data: any) => {
+      setLatlng(data);
+      setAddress(data);
+    });
   }, []);
 
   const _modalContentRenderer = useCallback(() => {
@@ -63,8 +76,8 @@ function LocationCapsule() {
       <CustomModal
         visible={visible}
         setVisible={setVisible}
+        confirmPress={_onPressConfirm}
         contentRenderer={_modalContentRenderer}
-        confirmPress={() => {}}
         confirmText={'설정'}
         cancelText={'취소'}
       />
@@ -80,8 +93,6 @@ function LocationCapsule() {
         containerStyle={styles.webviewContainer}
         source={{ uri: webviewUrl }}
         onMessage={_onMessage}
-        // onError={(msg: any) => console.log(msg)}
-        // onHttpError={(msg: any) => console.log(msg)}
         javaScriptEnabled={true} // JS 통신하기 위함
         geolocationEnabled={true} // GPS 현재 위치 받아오기 위함
       />

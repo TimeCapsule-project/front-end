@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import Toast from 'react-native-root-toast';
 import { useQuery, useQueryClient } from 'react-query';
-import { instance as axios } from 'utils/request';
+import { get } from 'utils/request';
 
 const useVerifyEmailNumber = (num: string, onSuccess: (data: any) => void) => {
   const client = useQueryClient();
 
   const fetch = useCallback(
-    () => axios.get('/api/email/verifyCode', { params: { code: num } }),
+    () => get('/api/email/verifyCode', { params: { code: num } }),
     [num],
   );
 

@@ -1,8 +1,8 @@
 import Toast from 'react-native-root-toast';
 import { useMutation, useQueryClient } from 'react-query';
-import { instance as axios } from 'utils/request';
+import { post } from 'utils/request';
 
-interface SignUpParams {
+interface SignUpData {
   userId: string;
   userPw: string;
   userNickname: string;
@@ -14,7 +14,7 @@ const useSignUpMutation = (onSuccess: () => void) => {
 
   return useMutation(
     'signUp',
-    (params: SignUpParams) => axios.post('/api/user', params),
+    (data: SignUpData) => post('/api/user', { data }),
     {
       onSuccess: () => {
         client.invalidateQueries(['api', 'user']);

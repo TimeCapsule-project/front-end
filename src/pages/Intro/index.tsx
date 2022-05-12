@@ -1,20 +1,28 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Image,
-  Linking,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import Toast from 'react-native-root-toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useKakaoLogin } from './hooks/useKakaoLogin';
+import { checkLogged } from 'utils/auth';
+import { useLogin } from './hooks/useLogin';
+import { useKakaoLogin, useKakaoLoginUtils } from './hooks/useKakaoLogin';
 import { defaultStyles } from 'assets/styles/default';
 import { globalStyles } from 'assets/styles/global';
 import { mixinStyles } from 'assets/styles/mixin';
 import { darkBlue, yellow } from 'assets/styles/colors';
 import { RootStackParamList } from '../routes';
+import {
+  STORAGE_COMMON_TOKEN_KEY,
+  STORAGE_KAKAO_TOKEN_KEY,
+  USER_PROFILE_KEY,
+} from 'constants/asyncStorage';
 import TemplateText from 'components/TemplateText';
 import TouchableImage from 'components/TouchableImage';
 
@@ -28,10 +36,15 @@ function Intro(props: PropsType) {
   const [id, setId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const _onPress = useCallback(
-    () => props.navigation.navigate('Home'),
-    [props.navigation],
-  );
+  const redirectLogged = useCallback(async () => {
+    if (await checkLogged()) {
+      props.navigation.navigate('Home');
+    }
+  }, [props.navigation]);
+
+  useEffect(() => {
+    redirectLogged();
+  }, [redirectLogged]);
 
   const _onPressSignUp = useCallback(
     () => props.navigation.navigate('SignUp/AccountInfoStep'),
@@ -50,23 +63,60 @@ function Intro(props: PropsType) {
     [],
   );
 
-  const _onSuccessGetKakaoLoginUrl = useCallback(async (url: string) => {
-    const redirect = await Linking.getInitialURL();
-    const split = url.split('redirect_uri=');
-    const openUrl = `${split[0]}redirect_uri=${'timecapsuleapp://Intro'}${
-      '&response_type=code' //split[1]
-    }`;
-    console.log(openUrl);
-    await Linking.openURL(openUrl);
-  }, []);
-
-  const { refetch: getKakaoLoginUrl } = useKakaoLogin(
-    _onSuccessGetKakaoLoginUrl,
+  // common Login
+  const _onSuccessLogin = useCallback(
+    async (data: any) => {
+      try {
+        const token = data.access_TOKEN;
+        if (token) {
+          await AsyncStorage.setItem(STORAGE_COMMON_TOKEN_KEY, token);
+          Toast.show(`${data.userNickname}님, 환영합니다!`);
+          props.navigation.navigate('Home');
+        }
+      } catch (error) {
+        Toast.show('인증이 실패하였습니다.');
+        console.error(error);
+      }
+    },
+    [props.navigation],
   );
 
-  const _onPressKakaoLogin = useCallback(() => {
-    getKakaoLoginUrl();
-  }, [getKakaoLoginUrl]);
+  const { refetch: signIn } = useLogin(
+    { userId: id, userPw: password },
+    _onSuccessLogin,
+  );
+
+  const _onPress = useCallback(() => signIn(), [signIn]);
+
+  // kakao Login
+  const { getKakaoProfile } = useKakaoLoginUtils();
+
+  const _onSuccessKakaoLogin = useCallback(
+    async (data: any) => {
+      try {
+        const token = data.access_TOKEN;
+        if (token) {
+          const profile = await getKakaoProfile();
+
+          await AsyncStorage.setItem(STORAGE_KAKAO_TOKEN_KEY, token);
+          await AsyncStorage.setItem(USER_PROFILE_KEY, profile);
+          Toast.show(`${data.userNickname}님, 환영합니다!`);
+          props.navigation.navigate('Home');
+        }
+      } catch (error) {
+        Toast.show('인증이 실패하였습니다.');
+        console.error(error);
+      }
+    },
+    [getKakaoProfile, props.navigation],
+  );
+
+  const { refetch: signInWithKakao } = useKakaoLogin(_onSuccessKakaoLogin);
+
+  const _onPressKakaoLogin = useCallback(
+    () => signInWithKakao(),
+    [signInWithKakao],
+  );
 
   return (
     <View style={styles.container}>

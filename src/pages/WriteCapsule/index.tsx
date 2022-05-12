@@ -1,4 +1,11 @@
-import React, { Fragment, useCallback, useMemo, useState } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { useRecoilValue } from 'recoil';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -20,6 +27,8 @@ import SmallPencel from 'components/SvgComponents/smallPencel';
 import RouteHeader from 'components/RouteHeader';
 import SelectCapsule from 'components/SelectCapsule';
 import TemplateText from 'components/TemplateText';
+import { useRandomNickname } from './hooks/useRandomNickname';
+import { latLngSelector } from '../../states/selectors';
 
 type WriteCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -40,6 +49,7 @@ function WriteCapsule() {
     return { origin: new Date(), data: getParsedDate(origin) };
   }, []);
 
+  const [capsuleType] = useState<string>(route.params.type);
   const [color, setColor] = useState<string>('#40a629');
   const [content, setContent] = useState<string>('');
   const [dateTime, setDateTime] = useState<DateTimeType>(initDateData.data);
@@ -47,14 +57,40 @@ function WriteCapsule() {
   const [isEnableAllDay, setEnableAllDay] = useState<boolean>(false);
   const [to, setTo] = useState<string>('');
   const [from, setFrom] = useState<string>('');
+  const [randomNickname, setRandomNickname] = useState<string>('');
 
-  const _goPreview = useCallback(
-    () =>
-      navigation.navigate('WriteCapsulePreview', {
-        data: { content, date: dateTime, to, from, color },
-      }),
-    [content, dateTime, navigation, from, to, color],
+  const latLng = useRecoilValue(latLngSelector);
+
+  const _onSuccessGetRandomNickname = useCallback((data: string) => {
+    setRandomNickname(data);
+  }, []);
+
+  const { refetch: getRandomNickname } = useRandomNickname(
+    _onSuccessGetRandomNickname,
   );
+
+  const _onPressSwitchRandomNickname = useCallback(
+    async (active: boolean) => {
+      if (!active) {
+        getRandomNickname();
+      }
+      setEnableNickname(active);
+    },
+    [getRandomNickname],
+  );
+
+  const _goPreview = () =>
+    navigation.navigate('WriteCapsulePreview', {
+      data: {
+        color,
+        content,
+        date: dateTime,
+        to: 'TODO_검색_API_미완',
+        from: isEnableNickname ? randomNickname : from,
+        lat: latLng.lat,
+        lng: latLng.lng,
+      },
+    });
 
   const _goLocation = useCallback(
     () => navigation.navigate('LocationCapsule'),
@@ -65,6 +101,10 @@ function WriteCapsule() {
     (data: DateTimeType) => data && setDateTime(data),
     [],
   );
+
+  useEffect(() => {
+    getRandomNickname();
+  }, [getRandomNickname]);
 
   return (
     <Fragment>
@@ -93,9 +133,8 @@ function WriteCapsule() {
             isEnableNickname
               ? {
                   editable: false,
-                  value: '입 짧은 햇님',
+                  value: randomNickname,
                   style: styles.inputNickname,
-                  onChangeText: setFrom,
                 }
               : {
                   editable: true,
@@ -108,10 +147,10 @@ function WriteCapsule() {
           switchInfo={{
             label: '랜덤 닉네임 사용',
             value: isEnableNickname,
-            onSwitch: setEnableNickname,
+            onSwitch: _onPressSwitchRandomNickname,
           }}
         />
-        {route.params.type === 'special' && (
+        {capsuleType === 'special' && (
           <TouchableOpacity onPress={_goLocation} style={styles.locationButton}>
             <TextInputTemplate
               label={'캡슐 장소 설정하기'}

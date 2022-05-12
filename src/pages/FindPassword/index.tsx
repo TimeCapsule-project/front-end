@@ -22,6 +22,7 @@ type PropsType = {
 
 function FindPassword({ navigation }: PropsType) {
   const [id, setId] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [checkPassword, setCheckPassword] = useState<string>('');
 
@@ -34,7 +35,7 @@ function FindPassword({ navigation }: PropsType) {
   }, [id]);
 
   const _onChangeTextId = useCallback((text: string) => setId(text), []);
-  const _onChangeTextEmail = useCallback((text: string) => setId(text), []);
+  const _onChangeTextEmail = useCallback((text: string) => setEmail(text), []);
   const _onChangeTextNewPassword = useCallback(
     (text: string) => setPassword(text),
     [],
@@ -68,7 +69,7 @@ function FindPassword({ navigation }: PropsType) {
           style: styles.input,
           onChangeText: _onChangeTextEmail,
           placeholder: '가입 정보와 일치해야 합니다.',
-          value: id,
+          value: email,
         }}
         buttonProps={{
           style: styles.button,

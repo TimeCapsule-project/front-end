@@ -1,10 +1,12 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   View,
   FlexStyle,
+  Alert,
+  Image,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
@@ -15,6 +17,8 @@ import { RootStackParamList } from 'pages/routes';
 import RouteHeader from 'components/RouteHeader';
 import TemplateText from 'components/TemplateText';
 import { DateTimeType } from 'components/DateTimePickerModal';
+import { useWriteCapsuleMutation } from './hooks/useWriteCapsuleMutation';
+import CustomModal from 'components/CustomModal';
 
 export type PreviewData = {
   content?: string;
@@ -22,7 +26,9 @@ export type PreviewData = {
   to: string;
   from: string;
   color: string;
-}
+  lat: number;
+  lng: number;
+};
 
 type WriteCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -55,12 +61,55 @@ const PersonText = React.memo(
   ),
 );
 
-function WriteCapsule() {
+function WriteCapsulePreview() {
   const navigation = useNavigation<WriteCapsuleScreenNavigationProp>();
   const { params } = useRoute<WriteCapsuleScreenRouteProp>();
 
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const _onSuccessSubmit = useCallback((data: any) => {
+    console.log(data);
+  }, []);
+
+  const { mutate } = useWriteCapsuleMutation(_onSuccessSubmit);
+
+  const _onPressSubmit = useCallback(() => setVisible(true), []);
+
+  const _onPressConfirm = () =>
+    mutate({
+      title: '???',
+      content: params.data?.content || '',
+      nickname: params.data?.from, // 내 닉네임
+      recipient: params.data?.to, // 캡슐 받을 친구
+      duration: `${params.data?.date.date} ${params.data?.date.time}`, // 2022-04-05
+      latitude: params.data?.lat, // 위도
+      longitude: params.data?.lng, // 경도
+    });
+
+  const _modalContentRenderer = useCallback(() => {
+    return (
+      <View style={styles.modalContentContainer}>
+        <Image
+          style={styles.modalImage}
+          source={require('../../assets/images/thumbnail.png')}
+        />
+        <TemplateText familyType="bold">
+          {'캡슐을 묻게 되면 내용을 수정할 수 없어요! 캡슐을 묻으시겠습니까?'}
+        </TemplateText>
+      </View>
+    );
+  }, []);
+
   return (
     <Fragment>
+      <CustomModal
+        visible={visible}
+        setVisible={setVisible}
+        confirmPress={_onPressConfirm}
+        contentRenderer={_modalContentRenderer}
+        confirmText={'확인'}
+        cancelText={'취소'}
+      />
       <RouteHeader
         label="타임 캡슐 미리보기"
         textAlign="center"
@@ -85,7 +134,7 @@ function WriteCapsule() {
         </View>
         <TouchableOpacity
           style={styles.submitButton}
-          onPress={() => console.log('submit!')}>
+          onPress={_onPressSubmit}>
           <TemplateText familyType="power" style={styles.submitButtonText}>
             {'캡슐 묻기'}
           </TemplateText>
@@ -148,6 +197,15 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: 'white',
   },
+  ///////
+  modalContentContainer: {
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalImage: {
+    width: 75,
+    height: 45,
+  },
 });
 
-export default WriteCapsule;
+export default WriteCapsulePreview;

@@ -1,25 +1,65 @@
-import { useCallback } from 'react';
 import Toast from 'react-native-root-toast';
-import { useQuery, useQueryClient } from 'react-query';
-import { instance as axios } from 'utils/request';
+import { useQuery } from 'react-query';
+import {
+  login,
+  logout,
+  unlink,
+  getProfile,
+  KakaoProfile,
+  KakaoProfileNoneAgreement,
+} from '@react-native-seoul/kakao-login';
+import { get } from 'utils/request';
 
 const useKakaoLogin = (onSuccess: (data: any) => void) => {
-  const client = useQueryClient();
+  const fetch = async () => {
+    try {
+      const tokens = await login();
+      const token = tokens.accessToken;
+      if (token) {
+        return get('api/account/kakaologin', { params: { token } });
+      }
+      throw new Error('failed kakao login api');
+    } catch (error) {
+      console.error(error);
+      Toast.show(String(error));
+    }
+  };
 
-  const fetch = useCallback(() => axios.get('/api/account/login-url'), []);
-
-  return useQuery(['kakaoLogin'], fetch, {
+  return useQuery(['signInWithKakao'], fetch, {
     refetchOnWindowFocus: false,
     enabled: false,
-    onSuccess: response => {
-      client.invalidateQueries(['api', 'account', 'login-url']);
-      onSuccess(response.data.data); // TODO: FIX API RESPONSE
-    },
+    onSuccess: (response: any) => onSuccess(response.data.data),
     onError: error => {
-      Toast.show('이미 가입된 아이디 입니다.');
+      // loginWithKakaoAccount # 카카오톡 없이 로그인하는 기능이 제대로 작동하지 않아 기본형으로 사용함
+      Toast.show('카카오 인증에 실패했습니다. 먼저 카카오톡을 설치해주세요.');
       console.error(error);
     },
   });
+}
+
+const useKakaoLoginUtils = () => {
+  /**
+   * @returns {String} message
+   */
+  const signOutWithKakao = async (): Promise<string> => await logout();
+
+  /**
+   * @returns {String} message
+   */
+  const unlinkKakao = async (): Promise<string> => await unlink();
+
+  const getKakaoProfile = async (): Promise<string> => {
+    const profile: KakaoProfile | KakaoProfileNoneAgreement =
+      await getProfile();
+
+    return JSON.stringify(profile);
+  };
+
+  return {
+    signOutWithKakao,
+    getKakaoProfile,
+    unlinkKakao,
+  };
 };
 
-export { useKakaoLogin };
+export { useKakaoLogin, useKakaoLoginUtils };
