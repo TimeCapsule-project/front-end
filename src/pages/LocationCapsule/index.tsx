@@ -15,7 +15,10 @@ import CustomModal from 'components/CustomModal';
 import RouteHeader from 'components/RouteHeader';
 import TemplateText from 'components/TemplateText';
 import Poi from 'components/SvgComponents/poi';
+import Search from 'components/SvgComponents/search';
 import MyPosition from 'components/SvgComponents/myPosition';
+import { TextInputTemplate } from 'components/InputRow/template';
+import { getFont } from 'utils/getFont';
 
 type LocationCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -34,6 +37,7 @@ function LocationCapsule() {
   const route = useRoute<LocationCapsuleScreenRouteProp>();
 
   const [visible, setVisible] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   const [latlng, setLatlng] = useState<string>('');
 
@@ -87,7 +91,16 @@ function LocationCapsule() {
           textAlign="center"
           containerStyle={styles.headerStyle}
         />
-        <TemplateText>{'TEST'}</TemplateText>
+        <TextInputTemplate
+          iconComponentFunc={Search}
+          inputWrapStyle={styles.inputWrap}
+          inputProps={{
+            placeholder: '지번, 도로명, 건물명으로 검색',
+            style: styles.input,
+            value: searchText,
+            onChangeText: setSearchText,
+          }}
+        />
       </View>
       <WebView
         containerStyle={styles.webviewContainer}
@@ -175,6 +188,24 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 20,
     borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  inputWrap: {
+    marginHorizontal: 25,
+    marginTop: 30,
+  },
+  input: {
+    fontFamily: getFont('bold'),
+    paddingLeft: 50,
+    zIndex: 1,
+    backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

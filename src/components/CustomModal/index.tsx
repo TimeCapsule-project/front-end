@@ -35,7 +35,7 @@ const CustomModal = (props: CustomModalProps) => {
   const _confirmPress = useCallback(() => {
     confirmPress && confirmPress();
     props.setVisible(false);
-  }, [confirmPress, props])
+  }, [confirmPress, props]);
 
   const _visible = props?.visible || false;
 

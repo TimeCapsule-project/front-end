@@ -41,7 +41,7 @@ interface ButtonProps {
 
 export interface PropsType {
   type: string;
-  label: string;
+  label?: string;
   inputProps: InputProps['inputProps'];
   dateTimeOptions?: InputProps['dateTimeOptions'];
   buttonProps?: ButtonProps;
@@ -123,11 +123,13 @@ function InputRow({
   return (
     <View style={[styles.container, containerStyle || {}]}>
       <View>
-        <TemplateText
-          familyType={labelFont || 'power'}
-          style={labelStyle || {}}>
-          {label}
-        </TemplateText>
+        {label && (
+          <TemplateText
+            familyType={labelFont || 'power'}
+            style={labelStyle || {}}>
+            {label}
+          </TemplateText>
+        )}
       </View>
       {switchInfo && (
         <View style={styles.switchWrap}>

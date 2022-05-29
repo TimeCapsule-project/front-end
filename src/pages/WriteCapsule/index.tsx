@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -27,8 +27,10 @@ import SmallPencel from 'components/SvgComponents/smallPencel';
 import RouteHeader from 'components/RouteHeader';
 import SelectCapsule from 'components/SelectCapsule';
 import TemplateText from 'components/TemplateText';
-import { useRandomNickname } from './hooks/useRandomNickname';
-import { latLngSelector } from '../../states/selectors';
+import { useRandomNickname } from 'hooks/api/useRandomNickname';
+import { writeCapsuleState } from 'states/atoms';
+import { sendNicknameSelector } from 'states/selectors';
+import { CapsuleType } from 'states/types';
 
 type WriteCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -49,20 +51,20 @@ function WriteCapsule() {
     return { origin: new Date(), data: getParsedDate(origin) };
   }, []);
 
-  const [capsuleType] = useState<string>(route.params.type);
-  const [color, setColor] = useState<string>('#40a629');
+  const [capsuleType] = useState<CapsuleType>(route.params.type);
+  const [colorIndex, setColorIndex] = useState<number>(0);
   const [content, setContent] = useState<string>('');
   const [dateTime, setDateTime] = useState<DateTimeType>(initDateData.data);
   const [isEnableNickname, setEnableNickname] = useState<boolean>(false);
   const [isEnableAllDay, setEnableAllDay] = useState<boolean>(false);
-  const [to, setTo] = useState<string>('');
   const [from, setFrom] = useState<string>('');
   const [randomNickname, setRandomNickname] = useState<string>('');
 
-  const latLng = useRecoilValue(latLngSelector);
+  const [data, setData] = useRecoilState(writeCapsuleState);
+  const sendNicknameValue = useRecoilValue(sendNicknameSelector);
 
-  const _onSuccessGetRandomNickname = useCallback((data: string) => {
-    setRandomNickname(data);
+  const _onSuccessGetRandomNickname = useCallback((_data: string) => {
+    setRandomNickname(_data);
   }, []);
 
   const { refetch: getRandomNickname } = useRandomNickname(
@@ -79,18 +81,22 @@ function WriteCapsule() {
     [getRandomNickname],
   );
 
-  const _goPreview = () =>
-    navigation.navigate('WriteCapsulePreview', {
-      data: {
-        color,
-        content,
-        date: dateTime,
-        to: 'TODO_검색_API_미완',
-        from: isEnableNickname ? randomNickname : from,
-        lat: latLng.lat,
-        lng: latLng.lng,
-      },
+  const _goPreview = () => {
+    setData({
+      capsuleType,
+      capsuleColorIndex: colorIndex,
+      content,
+      date: dateTime,
+      from: isEnableNickname ? randomNickname : from,
+      isAllDay: isEnableAllDay,
     });
+    navigation.navigate('WriteCapsulePreview', { type: 'write' });
+  };
+
+  const _goSearchNickname = useCallback(
+    () => navigation.navigate('SearchNickname', { type: 'search' }),
+    [navigation],
+  );
 
   const _goLocation = useCallback(
     () => navigation.navigate('LocationCapsule'),
@@ -98,13 +104,23 @@ function WriteCapsule() {
   );
 
   const _onChangeDate = useCallback(
-    (data: DateTimeType) => data && setDateTime(data),
+    (_data: DateTimeType) => _data && setDateTime(_data),
     [],
   );
 
   useEffect(() => {
     getRandomNickname();
-  }, [getRandomNickname]);
+    setColorIndex(data.capsuleColorIndex);
+    setContent(data.content);
+    setDateTime(data.date);
+    setFrom(data.from);
+  }, [
+    data.capsuleColorIndex,
+    data.content,
+    data.date,
+    data.from,
+    getRandomNickname,
+  ]);
 
   return (
     <Fragment>
@@ -114,18 +130,22 @@ function WriteCapsule() {
         containerStyle={styles.headerStyle}
       />
       <KeyboardAwareScrollView contentContainerStyle={styles.mainContainer}>
-        <SelectCapsule updateColor={setColor} />
-        <TextInputTemplate
-          label={'캡슐 받을 친구 선택하기'}
-          iconComponentFunc={People}
-          inputProps={{
-            editable: false,
-            placeholder: '닉네임 검색하기',
-            style: styles.input,
-            onChangeText: setTo,
-          }}
-          containerStyle={styles.inputContainer}
-        />
+        <SelectCapsule updateColor={setColorIndex} />
+        <TouchableOpacity
+          onPress={_goSearchNickname}
+          style={styles.locationButton}>
+          <TextInputTemplate
+            label={'캡슐 받을 친구 선택하기'}
+            iconComponentFunc={People}
+            inputProps={{
+              editable: false,
+              placeholder: '닉네임 검색하기',
+              style: styles.input,
+              value: sendNicknameValue?.nickname || '',
+            }}
+            containerStyle={styles.inputContainer}
+          />
+        </TouchableOpacity>
         <TextInputTemplate
           label={'내 닉네임 정하기'}
           iconComponentFunc={isEnableNickname ? undefined : SmallPencel}

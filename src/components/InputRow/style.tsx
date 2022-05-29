@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     left: 15,
     top: '25%',
-    zIndex: 1,
+    zIndex: 9,
   },
   switchWrap: {
     flexDirection: 'row',

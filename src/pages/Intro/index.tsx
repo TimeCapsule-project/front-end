@@ -8,21 +8,15 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-root-toast';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { checkLogged } from 'utils/auth';
-import { useLogin } from './hooks/useLogin';
-import { useKakaoLogin, useKakaoLoginUtils } from './hooks/useKakaoLogin';
+import { useLogin } from 'hooks/api/useLogin';
+import { useKakaoLogin } from 'hooks/api/useKakaoLogin';
 import { defaultStyles } from 'assets/styles/default';
 import { globalStyles } from 'assets/styles/global';
 import { mixinStyles } from 'assets/styles/mixin';
 import { darkBlue, yellow } from 'assets/styles/colors';
 import { RootStackParamList } from '../routes';
-import {
-  STORAGE_COMMON_TOKEN_KEY,
-  STORAGE_KAKAO_TOKEN_KEY,
-  USER_PROFILE_KEY,
-} from 'constants/asyncStorage';
 import TemplateText from 'components/TemplateText';
 import TouchableImage from 'components/TouchableImage';
 
@@ -65,51 +59,29 @@ function Intro(props: PropsType) {
 
   // common Login
   const _onSuccessLogin = useCallback(
-    async (data: any) => {
-      try {
-        const token = data.access_TOKEN;
-        if (token) {
-          await AsyncStorage.setItem(STORAGE_COMMON_TOKEN_KEY, token);
-          Toast.show(`${data.userNickname}님, 환영합니다!`);
-          props.navigation.navigate('Home');
-        }
-      } catch (error) {
-        Toast.show('인증이 실패하였습니다.');
-        console.error(error);
-      }
-    },
+    () => props.navigation.navigate('Home'),
     [props.navigation],
   );
 
-  const { refetch: signIn } = useLogin(
+  const { mutate: signIn } = useLogin(
     { userId: id, userPw: password },
     _onSuccessLogin,
   );
 
-  const _onPress = useCallback(() => signIn(), [signIn]);
+  const _onPress = useCallback(() => {
+    if (!id) {
+      return Toast.show('아이디를 입력해주세요.');
+    }
+    if (!password) {
+      return Toast.show('패스워드를 입력해주세요.');
+    }
+    signIn();
+  }, [id, password, signIn]);
 
   // kakao Login
-  const { getKakaoProfile } = useKakaoLoginUtils();
-
-  const _onSuccessKakaoLogin = useCallback(
-    async (data: any) => {
-      try {
-        const token = data.access_TOKEN;
-        if (token) {
-          const profile = await getKakaoProfile();
-
-          await AsyncStorage.setItem(STORAGE_KAKAO_TOKEN_KEY, token);
-          await AsyncStorage.setItem(USER_PROFILE_KEY, profile);
-          Toast.show(`${data.userNickname}님, 환영합니다!`);
-          props.navigation.navigate('Home');
-        }
-      } catch (error) {
-        Toast.show('인증이 실패하였습니다.');
-        console.error(error);
-      }
-    },
-    [getKakaoProfile, props.navigation],
-  );
+  const _onSuccessKakaoLogin = useCallback(() => {
+    props.navigation.navigate('Home');
+  }, [props.navigation]);
 
   const { refetch: signInWithKakao } = useKakaoLogin(_onSuccessKakaoLogin);
 
@@ -136,6 +108,7 @@ function Intro(props: PropsType) {
           onChangeText={_onChangePassword}
           placeholder="비밀번호"
           value={password}
+          secureTextEntry={true}
         />
         <TouchableOpacity
           style={styles.findPassword}

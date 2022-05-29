@@ -4,6 +4,7 @@
         <domain includeSubdomains="true">unrivaled-cheesecake-e0f811.netlify.app</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
         <domain includeSubdomains="true">10.0.0.1</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">ec2-54-180-138-55.ap-northeast-2.compute.amazonaws.com</domain>
         <!--안드로이드 실기기 테스트시 내 기기 IP-->

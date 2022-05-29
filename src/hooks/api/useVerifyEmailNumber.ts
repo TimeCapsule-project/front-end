@@ -16,6 +16,7 @@ const useVerifyEmailNumber = (num: string, onSuccess: (data: any) => void) => {
     enabled: false,
     onSuccess: response => {
       client.invalidateQueries(['api', 'email', 'verifyCode']);
+      Toast.show('인증되었습니다.');
       onSuccess(response);
     },
     onError: error => {

@@ -1,34 +1,34 @@
-import React, { Fragment, useCallback, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import {
+  View,
+  Image,
+  FlexStyle,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
-  View,
-  FlexStyle,
-  Alert,
-  Image,
 } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useRecoilState } from 'recoil';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+import {
+  latLngState,
+  sendNicknameState,
+  writeCapsuleState,
+} from 'states/atoms';
+import { RootStackParamList } from 'pages/routes';
 import { mixinStyles } from 'assets/styles/mixin';
 import { darkBlue, yellow } from 'assets/styles/colors';
-import { RootStackParamList } from 'pages/routes';
+import { useCapsuleDetail } from 'hooks/api/useCapsuleDetail';
+import { useWriteCapsuleMutation } from 'hooks/api/useWriteCapsuleMutation';
 import RouteHeader from 'components/RouteHeader';
 import TemplateText from 'components/TemplateText';
-import { DateTimeType } from 'components/DateTimePickerModal';
-import { useWriteCapsuleMutation } from './hooks/useWriteCapsuleMutation';
 import CustomModal from 'components/CustomModal';
+import ReturnSvg from 'components/SvgComponents/return';
+import DownloadImageSvg from 'components/SvgComponents/downloadImage';
+import { CapsuleType } from 'states/types';
 
-export type PreviewData = {
-  content?: string;
-  date: DateTimeType;
-  to: string;
-  from: string;
-  color: string;
-  lat: number;
-  lng: number;
-};
+export type PreviewFrom = 'link' | 'list' | 'write';
 
 type WriteCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -63,27 +63,41 @@ const PersonText = React.memo(
 
 function WriteCapsulePreview() {
   const navigation = useNavigation<WriteCapsuleScreenNavigationProp>();
-  const { params } = useRoute<WriteCapsuleScreenRouteProp>();
+  const {
+    params: { type, id },
+  } = useRoute<WriteCapsuleScreenRouteProp>();
+  console.log('ID:', id);
+  // preview data
+  const [capsule, setCapsule] = useRecoilState(writeCapsuleState);
+  const [sendNickname, setSendNickname] = useRecoilState(sendNicknameState);
+  const [latlng] = useRecoilState(latLngState);
 
+  const [isOpen, setOpen] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
 
-  const _onSuccessSubmit = useCallback((data: any) => {
-    console.log(data);
-  }, []);
+  const _onSuccessSubmit = useCallback(
+    (_: any) => navigation.navigate('Home'),
+    [navigation],
+  );
 
   const { mutate } = useWriteCapsuleMutation(_onSuccessSubmit);
 
   const _onPressSubmit = useCallback(() => setVisible(true), []);
 
+  const _onPressSaveImage = useCallback(() => {}, []);
+
   const _onPressConfirm = () =>
     mutate({
-      title: '???',
-      content: params.data?.content || '',
-      nickname: params.data?.from, // 내 닉네임
-      recipient: params.data?.to, // 캡슐 받을 친구
-      duration: `${params.data?.date.date} ${params.data?.date.time}`, // 2022-04-05
-      latitude: params.data?.lat, // 위도
-      longitude: params.data?.lng, // 경도
+      recipient: sendNickname.userId, // to
+      type: capsule.capsuleType,
+      content: capsule.content || '',
+      nickname: capsule.from,
+      latitude: latlng.lat,
+      longitude: latlng.lng,
+      duration: `${capsule.date.date.replace(/[.]/g, '-')}T${
+        capsule.isAllDay ? '00:00:00' : `${capsule.date.time.split(' ')[1]}:00`
+      }`,
+      capsuleColorIndex: capsule.capsuleColorIndex || 0,
     });
 
   const _modalContentRenderer = useCallback(() => {
@@ -93,12 +107,43 @@ function WriteCapsulePreview() {
           style={styles.modalImage}
           source={require('../../assets/images/thumbnail.png')}
         />
-        <TemplateText familyType="bold">
+        <TemplateText familyType="bold" style={styles.modalContentText}>
           {'캡슐을 묻게 되면 내용을 수정할 수 없어요! 캡슐을 묻으시겠습니까?'}
         </TemplateText>
       </View>
     );
   }, []);
+
+  const _onSuccessCapsuleDetail = useCallback(
+    (data: any) => {
+      const datetime = data.duration.split('T');
+      setCapsule({
+        capsuleType: CapsuleType.ANYWHERE,
+        capsuleColorIndex: 0,
+        content: data.content,
+        date: {
+          date: datetime[0].replace(/[-]/g, '.'),
+          time: datetime[1],
+        },
+        isAllDay: false,
+        from: data.nickname,
+      });
+      setSendNickname(data.recipient);
+      setOpen(data.opened);
+    },
+    [setCapsule, setSendNickname],
+  );
+
+  const { refetch: getDetail } = useCapsuleDetail(
+    id || -1,
+    _onSuccessCapsuleDetail,
+  );
+
+  useEffect(() => {
+    if (type === 'list') {
+      getDetail();
+    }
+  }, [getDetail, type]);
 
   return (
     <Fragment>
@@ -119,26 +164,51 @@ function WriteCapsulePreview() {
         <View style={styles.contentView}>
           <View>
             <TemplateText familyType="power" style={styles.usuableDateText}>
-              {`${params.data?.date.date}. ${params.data?.date.time} 이후 개봉 가능`}
+              {`${capsule.date.date}${
+                capsule.isAllDay ? '' : `. ${capsule.date.time} 이후`
+              } 개봉 가능`}
             </TemplateText>
-            <PersonText person={params.data?.to} label="To. " />
+            <PersonText person={sendNickname.nickname} label="To. " />
             <TemplateText familyType="bold" style={styles.contentText}>
-              {params.data?.content || '입력한 내용이 없습니다.'}
+              {capsule.content || '입력한 내용이 없습니다.'}
             </TemplateText>
           </View>
-          <PersonText
-            person={params.data?.from}
-            label="From. "
-            aligh="flex-end"
-          />
+          <PersonText person={capsule.from} label="From. " aligh="flex-end" />
         </View>
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={_onPressSubmit}>
-          <TemplateText familyType="power" style={styles.submitButtonText}>
-            {'캡슐 묻기'}
-          </TemplateText>
-        </TouchableOpacity>
+        {type === 'write' ? (
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={_onPressSubmit}>
+            <TemplateText familyType="power" style={styles.submitButtonText}>
+              {'캡슐 묻기'}
+            </TemplateText>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.buttonWrap}>
+            {!isOpen && (
+              <TouchableOpacity
+                style={styles.saveImageButton}
+                onPress={_onPressSaveImage}>
+                <ReturnSvg />
+                <TemplateText
+                  familyType="power"
+                  style={styles.saveImageButtonText}>
+                  {'발신 취소하기'}
+                </TemplateText>
+              </TouchableOpacity>
+            )}
+            {/* <TouchableOpacity
+              style={styles.saveImageButton}
+              onPress={_onPressSaveImage}>
+              <DownloadImageSvg />
+              <TemplateText
+                familyType="power"
+                style={styles.saveImageButtonText}>
+                {'이미지 저장하기'}
+              </TemplateText>
+            </TouchableOpacity> */}
+          </View>
+        )}
       </ScrollView>
     </Fragment>
   );
@@ -197,14 +267,32 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: 'white',
   },
+  saveImageButton: {
+    ...mixinStyles.flexCenter,
+    justifyContent: 'space-between',
+    height: 50,
+    marginTop: 25,
+  },
+  saveImageButtonText: {
+    color: darkBlue,
+  },
+  buttonWrap: {
+    marginBottom: 40,
+  },
   ///////
   modalContentContainer: {
     alignItems: 'center',
     padding: 20,
   },
   modalImage: {
-    width: 75,
-    height: 45,
+    width: 110,
+    height: 90,
+  },
+  modalContentText: {
+    width: 240,
+    marginTop: 10,
+    fontSize: 15,
+    textAlign: 'center',
   },
 });
 

@@ -1,21 +1,37 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { API_URL } from '../../config';
-import { getTokenAndType } from './auth';
+import { getToken } from './auth';
 
 const instance = axios.create({
   baseURL: API_URL,
 });
 
+const getHeaders = async () => {
+  const token = await getToken();
+  const headers: { [x: string]: string } = {};
+  if (token) {
+    headers['X-AUTH-TOKEN'] = token;
+  }
+
+  return headers;
+};
+
 const get = async <D>(url: string, config?: AxiosRequestConfig<D>) =>
   instance.get(url, {
     ...config,
-    headers: { 'X-AUTH-TOKEN': (await getTokenAndType())?.token || '' },
+    headers: await getHeaders(),
   });
 
 const post = async <D>(url: string, config?: AxiosRequestConfig<D>) =>
-  instance.post(url, {
+  instance.post(url, config?.data, {
     ...config,
-    headers: { 'X-AUTH-TOKEN': (await getTokenAndType())?.token || '' },
+    headers: await getHeaders(),
   });
 
-export { instance, get, post };
+const delete_ = async <D>(url: string, config?: AxiosRequestConfig<D>) =>
+  instance.delete(url, {
+    ...config,
+    headers: await getHeaders(),
+  });
+
+export { get, post, delete_ };

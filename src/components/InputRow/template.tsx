@@ -2,7 +2,7 @@ import React from 'react';
 import InputRow, { PropsType } from './index';
 import { templateStyles } from './style';
 
-type TemplatePropsType = Omit<PropsType, 'type'>
+type TemplatePropsType = Omit<PropsType, 'type'>;
 
 export function TextInputTemplate(props: TemplatePropsType) {
   return (

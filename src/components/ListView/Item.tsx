@@ -7,25 +7,35 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { darkBlue, sandGray, tomatoRed } from '../../assets/styles/colors';
-import { mixinStyles } from '../../assets/styles/mixin';
-import DeactiveNoti from '../SvgComponents/deactiveNoti';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'pages/routes';
+import { mixinStyles } from 'assets/styles/mixin';
+import { darkBlue, sandGray, tomatoRed } from 'assets/styles/colors';
+import { capsuleColors } from 'constants/capsuleColors';
 import Trash from '../SvgComponents/trash';
+import DeactiveNoti from '../SvgComponents/deactiveNoti';
 import GestureView from '../GestureView';
 import TemplateText from 'components/TemplateText';
 
-const capsuleSource = '../../assets/images/capsule.png';
-
 export type ListViewItem = {
-  date: string;
-  dDayText: string;
-  fromUserName: string;
-  location?: any;
+  data: any;
+  id: number;
+  colorIdx: number;
+  mainText: string;
+  subText1: string;
+  subText2: string;
   isActiveAlarm?: boolean;
   isShareAvailable?: boolean;
+  onClickItem: (data: any) => void;
 };
 
 type PropsType = ListViewItem;
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Home'
+>;
 
 const SCROLL_LIMIT = 120;
 
@@ -37,7 +47,18 @@ export const rightButtonOnPress = () => {
   console.log('rightButton pressed');
 };
 
-function ListViewItem({ date, dDayText, fromUserName }: PropsType) {
+function ListViewItem({
+  data,
+  colorIdx,
+  mainText,
+  subText1,
+  subText2,
+  isActiveAlarm,
+  isShareAvailable,
+  onClickItem,
+}: PropsType) {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
   const valueY = useMemo(() => new Animated.Value(0), []);
 
   const translate = useCallback(
@@ -63,39 +84,40 @@ function ListViewItem({ date, dDayText, fromUserName }: PropsType) {
 
   return (
     <View style={styles.container}>
-      <GestureView translate={translate} moveEventHandler={moveEventHandler}>
-        <View style={styles.innerContainer}>
-          <TouchableOpacity
-            style={styles.leftButton}
-            onPress={leftButtonOnPress}>
-            <DeactiveNoti />
-          </TouchableOpacity>
+      <View style={styles.innerContainer}>
+        <TouchableOpacity style={styles.leftButton} onPress={leftButtonOnPress}>
+          <DeactiveNoti />
+        </TouchableOpacity>
+        <GestureView
+          onPress={() => onClickItem(data)}
+          translate={translate}
+          moveEventHandler={moveEventHandler}>
           <View style={styles.mainContainer}>
             <Image
               style={styles.img}
-              source={require(capsuleSource)}
+              source={capsuleColors[colorIdx || 0].source}
               width={60}
               height={60}
             />
             <View style={styles.textContentsWrap}>
               <TemplateText familyType="power" style={styles.dDayText}>
-                {dDayText}
+                {mainText}
               </TemplateText>
               <TemplateText familyType="bold" style={styles.dateText}>
-                {date}
+                {subText1}
               </TemplateText>
               <TemplateText familyType="bold" style={styles.fromUserNameText}>
-                {fromUserName}
+                {subText2}
               </TemplateText>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.rightButton}
-            onPress={rightButtonOnPress}>
-            <Trash />
-          </TouchableOpacity>
-        </View>
-      </GestureView>
+        </GestureView>
+        <TouchableOpacity
+          style={styles.rightButton}
+          onPress={rightButtonOnPress}>
+          <Trash />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

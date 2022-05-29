@@ -9,10 +9,7 @@ const useGetVerifyEmailNumber = (
 ) => {
   const client = useQueryClient();
 
-  const fetch = useCallback(
-    () => get('/api/email', { params: { email } }),
-    [email],
-  );
+  const fetch = useCallback(() => get(`/api/email?email=${email}`), [email]);
 
   return useQuery(['getVerifyEmailNumber', email], fetch, {
     refetchOnWindowFocus: false,

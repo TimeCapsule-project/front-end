@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import TabMenuHeader from './TabMenuHeader';
 import { TabMenuHeaderItemInfo } from './TabMenuHeader/Item';
@@ -8,6 +8,7 @@ type PropsType = {
   headerItems: TabMenuHeaderItemInfo[];
   viewList: React.ReactNode[];
   defaultTab?: number;
+  onTabChange: (index: number) => void;
 };
 
 const styles = StyleSheet.create({
@@ -25,17 +26,30 @@ const styles = StyleSheet.create({
   spacingBox: { height: 15 },
 });
 
-function TabMenu({ headerItems, viewList, defaultTab }: PropsType) {
+function TabMenu({
+  headerItems,
+  viewList,
+  defaultTab,
+  onTabChange,
+}: PropsType) {
   const [currentTab, setTab] = useState<number>(defaultTab || 0);
   const ViewComponent = useMemo(
     () => viewList[currentTab] || <View style={styles.nullBox} />,
     [currentTab, viewList],
   );
 
+  const _setTab = useCallback(
+    (index: number) => {
+      setTab(index);
+      onTabChange(index);
+    },
+    [onTabChange],
+  );
+
   return (
     <View style={styles.container}>
       <TabMenuHeader
-        setTab={setTab}
+        setTab={_setTab}
         items={headerItems}
         currentTab={currentTab}
       />

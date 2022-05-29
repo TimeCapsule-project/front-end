@@ -2,12 +2,11 @@ import React, { useCallback } from 'react';
 import { Text, TextProps } from 'react-native';
 interface PropsType {
   familyType?: FontFamily;
-};
+}
 
 export type FontFamily = 'power' | 'bold' | 'light';
 
 export type TemplateTextProps = React.FC<PropsType & TextProps>;
-
 
 const TemplateText: TemplateTextProps = props => {
   const { familyType, children } = props;
@@ -26,7 +25,7 @@ const TemplateText: TemplateTextProps = props => {
 
   return (
     <Text {...props} style={[props.style, { fontFamily: fontFamilyParser() }]}>
-      {children}
+      {typeof children === 'string' ? children : ''}
     </Text>
   );
 };

@@ -5,9 +5,14 @@ import Swiper from 'react-native-swiper';
 
 import { mixinStyles } from '../../assets/styles/mixin';
 import { darkBlue, sandGray } from '../../assets/styles/colors';
-import { activeLocationPermission } from 'utils/permission/permissionUtil';
 import { RootStackParamList } from '../../pages/routes';
 import TemplateText from '../../components/TemplateText';
+import { useResetRecoilState } from 'recoil';
+import {
+  latLngState,
+  sendNicknameState,
+  writeCapsuleState,
+} from 'states/atoms';
 
 type PropsType = {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -68,19 +73,23 @@ const RenderSwiper = React.memo(function ({
 
 function CapsuleTypeSwiper({ navigation }: PropsType) {
   const [index, setIndex] = useState<number>(0);
+  const setWriteCapsuleReset = useResetRecoilState(writeCapsuleState);
+  const setSendNicknameReset = useResetRecoilState(sendNicknameState);
+  const setLatlngReset = useResetRecoilState(latLngState);
 
   const _onIndexChanged = useCallback((_index: number) => setIndex(_index), []);
 
   const _goWriteCapsule = useCallback(
     async (_index: number) => {
-      if (_index === 1) {
-        return activeLocationPermission(() =>
-          navigation.navigate('WriteCapsule', { type: 'special' }),
-        );
-      }
-      navigation.navigate('WriteCapsule', { type: 'anywhere' });
+      setWriteCapsuleReset();
+      setSendNicknameReset();
+      setLatlngReset();
+
+      _index === 0
+        ? navigation.navigate('WriteCapsule', { type: 'anywhere' })
+        : navigation.navigate('WriteCapsule', { type: 'special' });
     },
-    [navigation],
+    [navigation, setLatlngReset, setSendNicknameReset, setWriteCapsuleReset],
   );
 
   return (

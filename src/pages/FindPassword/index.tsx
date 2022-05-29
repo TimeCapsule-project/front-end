@@ -23,16 +23,21 @@ type PropsType = {
 function FindPassword({ navigation }: PropsType) {
   const [id, setId] = useState<string>('');
   const [email, setEmail] = useState<string>('');
+  const [authNumber, setAuthNumber] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [checkPassword, setCheckPassword] = useState<string>('');
 
   const goLogin = useCallback(() => navigation.navigate('Intro'), [navigation]);
 
-  const checkDuplID = useCallback(() => {
+  const checkID = useCallback(() => {
     if (validator(id, 'id')) {
       console.log('isValid And Request checkDuplID');
     }
   }, [id]);
+
+  const verifyEmail = useCallback(() => {
+    console.log(email);
+  }, [email]);
 
   const _onChangeTextId = useCallback((text: string) => setId(text), []);
   const _onChangeTextEmail = useCallback((text: string) => setEmail(text), []);
@@ -59,7 +64,7 @@ function FindPassword({ navigation }: PropsType) {
           style: styles.button,
           text: '확인',
           textStyle: styles.inputButtonText,
-          onPress: checkDuplID,
+          onPress: checkID,
         }}
         label={'가입 시 작성한 아이디'}
       />
@@ -75,7 +80,7 @@ function FindPassword({ navigation }: PropsType) {
           style: styles.button,
           text: '인증 받기',
           textStyle: styles.inputButtonText,
-          onPress: checkDuplID,
+          onPress: verifyEmail,
         }}
         label={'가입 시 작성한 이메일'}
       />

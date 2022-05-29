@@ -1,10 +1,11 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { darkBlue } from 'assets/styles/colors';
 import TemplateText from 'components/TemplateText';
 import SettingSvg from 'components/SvgComponents/setting';
 import MegaphoneSvg from 'components/SvgComponents/megaphone';
 import ActiveBellSvg from 'components/SvgComponents/activeBell';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   container: {
@@ -37,6 +38,12 @@ const styles = StyleSheet.create({
 });
 
 function Header() {
+  const navigation = useNavigation();
+
+  const _goSetting = useCallback(() => {
+    navigation.navigate('Setting');
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       <View style={styles.leftBox}>
@@ -47,7 +54,9 @@ function Header() {
       </View>
       <View style={styles.rightBox}>
         <ActiveBellSvg />
-        <SettingSvg />
+        <TouchableOpacity onPress={_goSetting}>
+          <SettingSvg />
+        </TouchableOpacity>
       </View>
     </View>
   );

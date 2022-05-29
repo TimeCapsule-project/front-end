@@ -4,15 +4,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 import { validator } from 'utils/validator';
-import { useSignUpMutation } from './hooks/useSignUpMutation';
-import { useVerifyEmailNumber } from './hooks/useVerifyEmailNumber';
-import { useGetVerifyEmailNumber } from './hooks/useGetVerifyEmailNumber';
-import { useCheckDuplicateNickname } from './hooks/useCheckDuplicateNickname';
+import { useSignUpMutation } from 'hooks/api/useSignUpMutation';
+import { useVerifyEmailNumber } from 'hooks/api/useVerifyEmailNumber';
+import { useGetVerifyEmailNumber } from 'hooks/api/useGetVerifyEmailNumber';
+import { useCheckDuplicateNickname } from 'hooks/api/useCheckDuplicateNickname';
 import { RootStackParamList } from '../routes';
 import InputRow from 'components/InputRow';
 import TemplateText from 'components/TemplateText';
 import FormContainer from 'components/FormContainer';
 import styles from 'components/FormContainer/style';
+import Toast from 'react-native-root-toast';
 
 const commonOptions = {
   containerStyle: styles.inputContainer,
@@ -58,7 +59,7 @@ function SignInfoStep() {
   }, []);
 
   const _onSuccessVerifyEmail = useCallback(() => {
-    setEditableEmail(true);
+    setEditableEmail(false);
     setVerifiedEmail(true);
   }, []);
 
@@ -68,12 +69,12 @@ function SignInfoStep() {
   );
 
   const { refetch: getVerifyNumber } = useGetVerifyEmailNumber(
-    email,
+    encodeURIComponent(email),
     _onSuccessGetVerifyEmailNumber,
   );
 
   const { refetch: verifyNumber } = useVerifyEmailNumber(
-    nickname,
+    authNumber,
     _onSuccessVerifyEmail,
   );
 
@@ -94,6 +95,7 @@ function SignInfoStep() {
     if (validator(nickname, 'id')) {
       checkNickname();
     }
+    Toast.show('닉네임이 유효하지 않습니다.');
   }, [checkNickname, nickname]);
 
   const getEmailAuthNum = useCallback(
@@ -110,10 +112,9 @@ function SignInfoStep() {
     (text: string) => setNickname(text),
     [],
   );
-  const _onChangeTextEmail = useCallback(
-    (text: string) => setEmail(encodeURIComponent(text)),
-    [],
-  );
+
+  const _onChangeTextEmail = useCallback((text: string) => setEmail(text), []);
+
   const _onChangeTextAuthNumber = useCallback(
     (text: string) => setAuthNumber(text),
     [],

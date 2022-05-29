@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '../routes';
 import { validator } from 'utils/validator';
-import { useCheckDuplicateId } from './hooks/useCheckDuplicateId';
+import { useCheckDuplicateId } from 'hooks/api/useCheckDuplicateId';
 import InputRow from 'components/InputRow';
 import TemplateText from 'components/TemplateText';
 import FormContainer from 'components/FormContainer';

@@ -1,8 +1,15 @@
 import React, { useRef } from 'react';
-import { Animated, PanResponder, PanResponderCallbacks } from 'react-native';
+import {
+  Animated,
+  GestureResponderEvent,
+  PanResponder,
+  PanResponderCallbacks,
+  TouchableOpacity,
+} from 'react-native';
 
 type PropsType = {
   children: JSX.Element;
+  onPress?: (event: GestureResponderEvent) => void;
   translate?: (pan: Animated.ValueXY) => {
     x: number | Animated.Value | Animated.AnimatedInterpolation;
     y: number | Animated.Value | Animated.AnimatedInterpolation;
@@ -24,6 +31,7 @@ type PropsType = {
  */
 function GestureView({
   children,
+  onPress,
   translate,
   grantEventHandler,
   moveEventHandler,
@@ -51,14 +59,18 @@ function GestureView({
 
   const _translate = translate ? translate(_pan) : _pan;
 
+  const AnimatedTouchableOpacity =
+    Animated.createAnimatedComponent(TouchableOpacity);
+
   return (
-    <Animated.View
+    <AnimatedTouchableOpacity
+      onPress={onPress}
       style={{
         transform: [{ translateX: _translate.x }, { translateY: _translate.y }],
       }}
       {..._panResponder.panHandlers}>
       {children}
-    </Animated.View>
+    </AnimatedTouchableOpacity>
   );
 }
 

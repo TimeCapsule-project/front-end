@@ -1,28 +1,23 @@
+import tokenParser from 'jwt-decode';
+import Toast from 'react-native-root-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  STORAGE_KAKAO_TOKEN_KEY,
-  STORAGE_COMMON_TOKEN_KEY,
-} from 'constants/asyncStorage';
+import { USER_TOKEN_KEY } from 'constants/asyncStorage';
 
-export const getTokenAndType = async () => {
-  const kakaoToken = await AsyncStorage.getItem(STORAGE_KAKAO_TOKEN_KEY);
-  if (kakaoToken) {
-    return {
-      token: kakaoToken,
-      type: 'kakao',
-    };
-  }
-  const token = await AsyncStorage.getItem(STORAGE_COMMON_TOKEN_KEY);
-  if (token) {
-    return {
-      token: kakaoToken,
-      type: 'common',
-    };
-  }
-  return null;
-};
+export const getToken = async () => await AsyncStorage.getItem(USER_TOKEN_KEY);
 
 export const checkLogged = async () => {
-  const token = await getTokenAndType();
+  const token = await getToken();
   return !!token;
+};
+
+export const parseJwt = (token: string) => {
+  const decode = tokenParser(token);
+  return decode;
+};
+
+export const logout = async (navigation?: any) => {
+  await AsyncStorage.setItem(USER_TOKEN_KEY, '');
+
+  Toast.show('성공적으로 로그아웃 되었습니다!');
+  navigation && navigation?.navigate('Intro');
 };
