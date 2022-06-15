@@ -35,9 +35,8 @@ const useGetArrivedCapsuleList = (page = 1, onSuccess: (data: any) => void) => {
             const remainTimeText =
               hour < 0 || minute < 0
                 ? '지금 오픈 가능합니다!'
-                : `${hour}시간 ${minute}분 뒤 오픈 가능`;
+                : `${day}일 ${hour}시간 ${minute}분 뒤 오픈 가능`;
 
-            console.log(day, hour, minute, remainTimeText);
             const dDayText = `D-${day > 0 ? day : 'DAY'}`;
 
             return {
@@ -46,7 +45,7 @@ const useGetArrivedCapsuleList = (page = 1, onSuccess: (data: any) => void) => {
               colorIdx: _data.capsuleType,
               mainText: dDayText,
               subText1: remainTimeText,
-              subText2: `from. ${_data.sender}`,
+              subText2: `from. ${_data.nickname}`,
             };
           },
         );

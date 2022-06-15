@@ -29,6 +29,7 @@ const useLogin = (data: CommonLoginRequestData, onSuccess: () => void) => {
               USER_PROFILE_KEY,
               JSON.stringify({
                 userId: _data.userId,
+                userEmail: _data.userEmail,
                 userNickname: _data.userNickname,
               }),
             );

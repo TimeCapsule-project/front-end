@@ -19,6 +19,7 @@ import {
 import RouteHeader from 'components/RouteHeader';
 import TemplateText from 'components/TemplateText';
 import CustomModal from 'components/CustomModal';
+import { useToggleAllowSearchNickname } from 'hooks/api/useToggleAllowSearchNickname';
 
 type SignInfoStepNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -36,19 +37,43 @@ function Setting() {
 
   const [visible, setVisible] = useState<boolean>(false);
   const [modalType, setModalType] = useState<'logout' | 'delete'>('logout');
-  const [userInfo, setUserInfo] = useState<UserInfo>();
+  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(undefined);
 
   const initUserInfo = async () => {
     const _userInfo = JSON.parse(
       (await AsyncStorage.getItem(USER_PROFILE_KEY)) || '',
     );
-    console.log(_userInfo);
     setUserInfo(_userInfo);
   };
 
   useEffect(() => {
     initUserInfo();
   }, []);
+
+  const _onSuccessRemoveAccount = useCallback(
+    () => Toast.show('계정이 삭제되었습니다.'),
+    [],
+  );
+
+  const _onSuccessToggleAllowSearchNickname = useCallback(() => {}, []);
+
+  const { mutate } = useRemoveAccount(_onSuccessRemoveAccount);
+
+  const { refetch: toggleAllowSearch } = useToggleAllowSearchNickname(
+    _onSuccessToggleAllowSearchNickname,
+  );
+
+  const _onPressConfirm = useCallback(() => {
+    if (modalType === 'logout') {
+      return logout(navigation);
+    }
+    userInfo?.userId && mutate(userInfo?.userId);
+  }, [modalType, userInfo?.userId, mutate, navigation]);
+
+  const goPage = useCallback(
+    (path: string, params?: any) => navigation.navigate(path, params),
+    [navigation],
+  );
 
   const _modalRenderer = useCallback(() => {
     return (
@@ -65,25 +90,6 @@ function Setting() {
       </View>
     );
   }, [modalType]);
-
-  const _onSuccessRemoveAccount = useCallback(
-    () => Toast.show('계정이 삭제되었습니다.'),
-    [],
-  );
-
-  const { mutate } = useRemoveAccount(_onSuccessRemoveAccount);
-
-  const _onPressConfirm = useCallback(() => {
-    if (modalType === 'logout') {
-      return logout(navigation);
-    }
-    userInfo?.userId && mutate(userInfo?.userId);
-  }, [modalType, userInfo?.userId, mutate, navigation]);
-
-  const goPage = useCallback(
-    (path: string, params?: any) => navigation.navigate(path, params),
-    [navigation],
-  );
 
   return (
     <Fragment>
@@ -103,12 +109,12 @@ function Setting() {
       <View style={styles.mainContainer}>
         <View style={styles.flexSpaceBetween}>
           <ConnectedProfile
-            email={'TEXT@NAVER.COM'}
+            email={userInfo?.userEmail}
             source={require('../../assets/images/capsules/1.png')}
           />
           <SettingCommonRow
             label={'닉네임'}
-            value={'닉네임입니당'}
+            value={userInfo?.userNickname}
             option={{
               type: 'navigate',
               func: () => goPage('Setting/ChangeNickname'),
@@ -118,7 +124,7 @@ function Setting() {
             label={'닉네임 검색 허용'}
             option={{
               type: 'switch',
-              func: () => console.log('allow search nickname'),
+              func: toggleAllowSearch,
             }}
           />
           <SettingCommonRow

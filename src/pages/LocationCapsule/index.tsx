@@ -1,24 +1,26 @@
-import React, { useCallback, useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { createRef, useCallback, useEffect, useState } from 'react';
 import { WebView } from 'react-native-webview';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSetRecoilState } from 'recoil';
-import { latLngState } from '../../states/atoms';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { latLngState } from 'states/atoms';
+import { LatLngDefaultData } from 'states/types';
+import { getFont } from 'utils/getFont';
+import { postMessage } from 'utils/postMessage';
 import { onMessage, OnMessageParam } from 'utils/onMessage';
 import { mixinStyles } from 'assets/styles/mixin';
 import { defaultStyles } from 'assets/styles/default';
 import { darkBlue, yellow } from 'assets/styles/colors';
 import { RootStackParamList } from 'pages/routes';
+import { TextInputTemplate } from 'components/InputRow/template';
 import CustomModal from 'components/CustomModal';
 import RouteHeader from 'components/RouteHeader';
 import TemplateText from 'components/TemplateText';
 import Poi from 'components/SvgComponents/poi';
 import Search from 'components/SvgComponents/search';
 import MyPosition from 'components/SvgComponents/myPosition';
-import { TextInputTemplate } from 'components/InputRow/template';
-import { getFont } from 'utils/getFont';
 
 type LocationCapsuleScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -34,12 +36,17 @@ const webviewUrl = 'https://unrivaled-cheesecake-e0f811.netlify.app';
 
 function LocationCapsule() {
   const navigation = useNavigation<LocationCapsuleScreenNavigationProp>();
-  const route = useRoute<LocationCapsuleScreenRouteProp>();
+  const { params } = useRoute<LocationCapsuleScreenRouteProp>();
+
+  const webview = createRef<any>();
 
   const [visible, setVisible] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>('');
   const [address, setAddress] = useState<string>('');
-  const [latlng, setLatlng] = useState<string>('');
+  const [curLatlng, setLatlng] = useState<LatLngDefaultData | undefined>();
+  const [dest, setDest] = useState<LatLngDefaultData | undefined>(
+    params?.latlng,
+  );
 
   const setLatLngState = useSetRecoilState(latLngState);
 
@@ -56,6 +63,20 @@ function LocationCapsule() {
       setAddress(data);
     });
   }, []);
+
+  const _touchMapPostMessage = useCallback(
+    () => postMessage({ webview, config: { type: '' } }),
+    [webview],
+  );
+
+  useEffect(() => {
+    if (params?.latlng) {
+      postMessage({
+        webview,
+        config: { type: 'DRAW_DESTINATION', data: params?.latlng },
+      });
+    }
+  }, [params?.latlng, webview]);
 
   const _modalContentRenderer = useCallback(() => {
     return (
@@ -87,22 +108,28 @@ function LocationCapsule() {
       />
       <View>
         <RouteHeader
-          label="캡슐 장소 설정하기"
+          label={
+            params?.latlng ? '캡슐 오픈 장소 확인하기' : '캡슐 장소 설정하기'
+          }
           textAlign="center"
           containerStyle={styles.headerStyle}
         />
-        <TextInputTemplate
-          iconComponentFunc={Search}
-          inputWrapStyle={styles.inputWrap}
-          inputProps={{
-            placeholder: '지번, 도로명, 건물명으로 검색',
-            style: styles.input,
-            value: searchText,
-            onChangeText: setSearchText,
-          }}
-        />
+        {!params?.latlng && (
+          <TextInputTemplate
+            iconComponentFunc={Search}
+            inputWrapStyle={styles.inputWrap}
+            inputProps={{
+              placeholder: '지번, 도로명, 건물명으로 검색',
+              style: styles.input,
+              value: searchText,
+              onChangeText: setSearchText,
+            }}
+          />
+        )}
       </View>
       <WebView
+        ref={webview}
+        onTouchEnd={_touchMapPostMessage}
         containerStyle={styles.webviewContainer}
         source={{ uri: webviewUrl }}
         onMessage={_onMessage}

@@ -28,10 +28,16 @@ const post = async <D>(url: string, config?: AxiosRequestConfig<D>) =>
     headers: await getHeaders(),
   });
 
+const patch = async <D>(url: string, config?: AxiosRequestConfig<D>) =>
+  instance.patch(url, config?.data, {
+    ...config,
+    headers: await getHeaders(),
+  });
+
 const delete_ = async <D>(url: string, config?: AxiosRequestConfig<D>) =>
   instance.delete(url, {
     ...config,
     headers: await getHeaders(),
   });
 
-export { get, post, delete_ };
+export { get, post, patch, delete_ };

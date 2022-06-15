@@ -1,17 +1,13 @@
 import { Dayjs } from 'dayjs';
 
-const dateDiffer = (from: Dayjs, to: Dayjs) => {
-  const durationObj = from;
-  const remainDays = durationObj.diff(to, 'day');
-  console.log("TEST", durationObj.add(remainDays, 'day'));
-  const remainHour = durationObj.add(remainDays, 'day').diff(to, 'h');
-  console.log("TEST2", durationObj
-  .add(remainDays, 'day')
-  .add(remainHour, 'h'))
-  const remainMinute = durationObj
-    .add(remainDays, 'day')
-    .add(remainHour, 'h')
-    .diff(to, 'm');
+const dateDiffer = (to: Dayjs, from: Dayjs) => {
+  const durationObj = to;
+  const remainDays = durationObj.diff(from, 'day'); // x > 0 이어야 남은 날짜수
+  const remainHour = durationObj.diff(from.add(remainDays, 'day'), 'h');
+  const remainMinute = durationObj.diff(
+    from.add(remainDays, 'day').add(remainHour, 'h'),
+    'm',
+  );
 
   return { day: remainDays, hour: remainHour, minute: remainMinute };
 };

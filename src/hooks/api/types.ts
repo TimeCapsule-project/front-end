@@ -5,20 +5,29 @@ export type LoginResponseData = {
     access_TOKEN: string;
     refresh_TOKEN: string;
     userId: number;
+    userEmail: string;
     userNickname: string;
   };
 };
 
 export type SendCapsuleItem = {
   capsuleId: number;
-  isOpened: boolean;
+  capsuleType: number;
+  content: string;
+  duration: string;
+  recipient: string;
   nickname: string;
+  location: {
+    x: number;
+    y: number;
+  };
+  opened: boolean;
 };
 
 export type ArrivedCapsuleItem = {
   capsuleId: number;
   capsuleType: number;
-  recipient: number;
+  recipient: string;
   sender: string;
   nickname: string;
   content: string;
@@ -40,5 +49,13 @@ export type GetArrivedCapsuleResponseData = {
 
 export type UserInfo = {
   userId: number;
+  userEmail: string;
   userNickname: string;
+};
+
+export type ChangeNicknameResponseData = {
+  data: {
+    userId: string;
+    userNickname: string;
+  };
 };

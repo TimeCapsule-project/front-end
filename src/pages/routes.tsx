@@ -15,14 +15,14 @@ import WriteCapsule from './WriteCapsule';
 import SearchNickname from './SearchNickname';
 import LocationCapsule from './LocationCapsule';
 
-import { CapsuleType } from 'states/types';
+import { CapsuleType, LatLngDefaultData } from 'states/types';
 
 export type RootStackParamList = {
   Home: undefined;
   Intro: undefined;
   Setting: undefined;
   FindPassword: undefined;
-  LocationCapsule: undefined;
+  LocationCapsule: { latlng?: LatLngDefaultData };
   SearchNickname: {
     type: 'search' | 'select';
     personInfo?: { source: any; id: number; name: string };

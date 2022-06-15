@@ -27,35 +27,25 @@ const useGetSendCapsuleList = (page = 1, onSuccess: (data: any) => void) => {
         const _currentObj = dayjs();
         const _mappedListForListView: ListViewItem[] = _datas.map(
           (_data: SendCapsuleItem) => {
-            // const { day, hour, minute } = dateDiffer(
-            //   dayjs(_data.duration),
-            //   _currentObj,
-            // );
+            const { day, hour, minute } = dateDiffer(
+              dayjs(_data.duration),
+              _currentObj,
+            );
 
-            // const remainTimeText =
-            //   hour < 0 || minute < 0
-            //     ? '지금 오픈 가능합니다!'
-            //     : `${hour}시간 ${minute}분 뒤 오픈 가능`;
+            const remainTimeText =
+              hour < 0 || minute < 0
+                ? '지금 오픈 가능합니다!'
+                : `${day}일 ${hour}시간 ${minute}분 뒤 오픈 가능`;
 
-            // console.log(day, hour, minute, remainTimeText);
-            // const dDayText = `D-${day > 0 ? day : 'DAY'}`;
+            const dDayText = `D-${day > 0 ? day : 'DAY'}`;
 
-            // return {
-            //   id: _data.capsuleId,
-            //   colorIdx: _data.capsuleType,
-            //   mainText: dDayText,
-            //   subText1: remainTimeText,
-            //   subText2: `from. ${_data.sender}`,
-            // };
-
-            // TODO: UPDATE RESPONSE DATA
             return {
               data: _data,
               id: _data.capsuleId,
-              colorIdx: 0,
-              mainText: 'test',
-              subText1: 'testsub',
-              subText2: `from. ${'testfrom'}`,
+              colorIdx: _data.capsuleType,
+              mainText: dDayText,
+              subText1: remainTimeText,
+              subText2: `from. ${_data.nickname}`,
             };
           },
         );

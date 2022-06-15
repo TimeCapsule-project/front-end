@@ -6,6 +6,7 @@ import { get } from 'utils/request';
 const useCheckDuplicateNickname = (
   userNickname: string,
   onSuccess: (data: any) => void,
+  onError?: () => void,
 ) => {
   const client = useQueryClient();
 
@@ -25,6 +26,7 @@ const useCheckDuplicateNickname = (
     onError: error => {
       Toast.show('중복된 닉네임 입니다.');
       console.error(error);
+      onError && onError();
     },
   });
 };

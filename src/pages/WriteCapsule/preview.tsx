@@ -8,14 +8,15 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useRecoilState } from 'recoil';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 
 import {
   latLngState,
   sendNicknameState,
   writeCapsuleState,
 } from 'states/atoms';
+import { CapsuleType } from 'states/types';
 import { RootStackParamList } from 'pages/routes';
 import { mixinStyles } from 'assets/styles/mixin';
 import { darkBlue, yellow } from 'assets/styles/colors';
@@ -25,8 +26,7 @@ import RouteHeader from 'components/RouteHeader';
 import TemplateText from 'components/TemplateText';
 import CustomModal from 'components/CustomModal';
 import ReturnSvg from 'components/SvgComponents/return';
-import DownloadImageSvg from 'components/SvgComponents/downloadImage';
-import { CapsuleType } from 'states/types';
+import SendMail from 'components/SvgComponents/sendMail';
 
 export type PreviewFrom = 'link' | 'list' | 'write';
 
@@ -66,7 +66,7 @@ function WriteCapsulePreview() {
   const {
     params: { type, id },
   } = useRoute<WriteCapsuleScreenRouteProp>();
-  console.log('ID:', id);
+
   // preview data
   const [capsule, setCapsule] = useRecoilState(writeCapsuleState);
   const [sendNickname, setSendNickname] = useRecoilState(sendNicknameState);
@@ -84,7 +84,12 @@ function WriteCapsulePreview() {
 
   const _onPressSubmit = useCallback(() => setVisible(true), []);
 
-  const _onPressSaveImage = useCallback(() => {}, []);
+  const _onPressCancel = useCallback(() => {}, []);
+
+  const _onPressGoWrite = useCallback(
+    () => navigation.navigate('WriteCapsule', { type: 'anywhere' }),
+    [navigation],
+  );
 
   const _onPressConfirm = () =>
     mutate({
@@ -128,7 +133,10 @@ function WriteCapsulePreview() {
         isAllDay: false,
         from: data.nickname,
       });
-      setSendNickname(data.recipient);
+      setSendNickname({
+        userId: -1,
+        nickname: data.recipient,
+      });
       setOpen(data.opened);
     },
     [setCapsule, setSendNickname],
@@ -145,6 +153,53 @@ function WriteCapsulePreview() {
     }
   }, [getDetail, type]);
 
+  const renderButtons = useCallback(() => {
+    switch (type) {
+      case 'write':
+        return (
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={_onPressSubmit}>
+            <TemplateText familyType="power" style={styles.submitButtonText}>
+              {'캡슐 묻기'}
+            </TemplateText>
+          </TouchableOpacity>
+        );
+      case 'list':
+        return (
+          <View style={styles.buttonWrap}>
+            <TouchableOpacity
+              style={styles.saveImageButton}
+              onPress={_onPressGoWrite}>
+              <SendMail />
+              <TemplateText
+                familyType="power"
+                style={styles.saveImageButtonText}>
+                {'답장 보내기'}
+              </TemplateText>
+            </TouchableOpacity>
+          </View>
+        );
+      default:
+        return (
+          <View style={styles.buttonWrap}>
+            {!isOpen && (
+              <TouchableOpacity
+                style={styles.saveImageButton}
+                onPress={_onPressCancel}>
+                <ReturnSvg />
+                <TemplateText
+                  familyType="power"
+                  style={styles.saveImageButtonText}>
+                  {'발신 취소하기'}
+                </TemplateText>
+              </TouchableOpacity>
+            )}
+          </View>
+        );
+    }
+  }, []);
+
   return (
     <Fragment>
       <CustomModal
@@ -156,7 +211,7 @@ function WriteCapsulePreview() {
         cancelText={'취소'}
       />
       <RouteHeader
-        label="타임 캡슐 미리보기"
+        label={type === 'list' ? '타임 캡슐 확인' : '타임 캡슐 미리보기'}
         textAlign="center"
         containerStyle={styles.headerStyle}
       />
@@ -175,40 +230,7 @@ function WriteCapsulePreview() {
           </View>
           <PersonText person={capsule.from} label="From. " aligh="flex-end" />
         </View>
-        {type === 'write' ? (
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={_onPressSubmit}>
-            <TemplateText familyType="power" style={styles.submitButtonText}>
-              {'캡슐 묻기'}
-            </TemplateText>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.buttonWrap}>
-            {!isOpen && (
-              <TouchableOpacity
-                style={styles.saveImageButton}
-                onPress={_onPressSaveImage}>
-                <ReturnSvg />
-                <TemplateText
-                  familyType="power"
-                  style={styles.saveImageButtonText}>
-                  {'발신 취소하기'}
-                </TemplateText>
-              </TouchableOpacity>
-            )}
-            {/* <TouchableOpacity
-              style={styles.saveImageButton}
-              onPress={_onPressSaveImage}>
-              <DownloadImageSvg />
-              <TemplateText
-                familyType="power"
-                style={styles.saveImageButtonText}>
-                {'이미지 저장하기'}
-              </TemplateText>
-            </TouchableOpacity> */}
-          </View>
-        )}
+        {renderButtons()}
       </ScrollView>
     </Fragment>
   );

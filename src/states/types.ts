@@ -11,3 +11,5 @@ export type CapsuleStateData = {
   isAllDay: boolean;
   from: string;
 };
+
+export type LatLngDefaultData = { lat: number; lng: number };

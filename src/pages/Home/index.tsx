@@ -119,10 +119,20 @@ function Home() {
   }, [currentInfo?.capsuleId, navigation]);
 
   const _onClickItem = useCallback((data: { capsuleId: number }) => {
-    console.log(data);
     setVisible(true);
     setCurrentInfo(data);
   }, []);
+
+  const _onPressGoLocationView = useCallback(
+    () =>
+      navigation.navigate('LocationCapsule', {
+        latlng: {
+          x: currentInfo?.location?.x || 0,
+          y: currentInfo?.location?.y || 0,
+        },
+      }),
+    [currentInfo?.location?.x, currentInfo?.location?.y, navigation],
+  );
 
   const renderOpenTimeNotifyText = useCallback(
     (isTimeOver: boolean, openDateText: string) => {
@@ -174,6 +184,39 @@ function Home() {
     [],
   );
 
+  const renderLocationText = () => {
+    return currentInfo.location ? (
+      <View style={styles.locationTextWrap}>
+        <MiniLocationSvg />
+        {allowPermission ? (
+          tabIndex === 0 ? (
+            <TouchableOpacity onPress={_onPressGoLocationView}>
+              <TemplateText familyType="power" style={styles.locationText}>
+                {'묻은 위치 확인하기' /* 보낸 리스트 모달 */}
+              </TemplateText>
+            </TouchableOpacity>
+          ) : (
+            <TemplateText familyType="power" style={styles.locationText}>
+              {
+                `타임캡슐 ${
+                  canOpenLocation
+                    ? '오픈이 가능한 위치입니다.'
+                    : '오픈 가능 위치가 아닙니다.'
+                }` /* 받은 리스트 모달 */
+              }
+            </TemplateText>
+          )
+        ) : (
+          <TemplateText familyType="power" style={styles.locationText}>
+            {'위치 기반 서비스에 동의해주세요.' /* permission not allowed */}
+          </TemplateText>
+        )}
+      </View>
+    ) : (
+      <View style={styles.spacingLineBox} />
+    );
+  };
+
   const _modalContentRenderer = () => {
     const date = dayjs(currentInfo.duration);
     const isTimeOver = date.isValid() ? date.diff(dayjs()) < 0 : false;
@@ -181,9 +224,12 @@ function Home() {
       ? date.format('YYYY년 MM월 DD일 A HH시 mm분')
       : 'invalid Date';
 
-    const disableButton = currentInfo.location
-      ? !canOpenLocation || (tabIndex === 1 && !isTimeOver) // Special Place
-      : tabIndex === 1 && !isTimeOver; // Anywhere Place
+    const disableButton =
+      tabIndex === 0
+        ? false // 보낸 리스트 모달은 무조건 확인 가능
+        : currentInfo.location
+        ? !canOpenLocation || (tabIndex === 1 && !isTimeOver) // Special Place
+        : tabIndex === 1 && !isTimeOver; // Anywhere Place
 
     return (
       <View style={styles.modalContentContainer}>
@@ -204,25 +250,12 @@ function Home() {
           height={110}
         />
         <TemplateText familyType="bold" style={styles.modalImageText}>
-          {`${tabIndex === 0 ? 'To.' : 'From.'} ${currentInfo.nickname}`}
+          {`${tabIndex === 0 ? 'To.' : 'From.'} ${
+            tabIndex === 0 ? currentInfo.recipient : currentInfo.nickname
+          }`}
         </TemplateText>
         {renderOpenTimeNotifyText(isTimeOver, openTimeText)}
-        {currentInfo.location ? (
-          <View style={styles.locationTextWrap}>
-            <MiniLocationSvg />
-            <TemplateText familyType="power" style={styles.locationText}>
-              {allowPermission
-                ? `타임캡슐 ${
-                    canOpenLocation
-                      ? '오픈이 가능한 위치입니다.'
-                      : '오픈 가능 위치가 아닙니다.'
-                  }`
-                : '위치 기반 서비스에 동의해주세요.'}
-            </TemplateText>
-          </View>
-        ) : (
-          <View style={styles.spacingLineBox} />
-        )}
+        {renderLocationText()}
         <TouchableOpacity
           onPress={_onPressConfirm}
           disabled={disableButton}

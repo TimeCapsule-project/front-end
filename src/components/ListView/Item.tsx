@@ -27,7 +27,7 @@ export type ListViewItem = {
   subText2: string;
   isActiveAlarm?: boolean;
   isShareAvailable?: boolean;
-  onClickItem: (data: any) => void;
+  onClickItem?: (data: any) => void;
 };
 
 type PropsType = ListViewItem;
@@ -89,7 +89,7 @@ function ListViewItem({
           <DeactiveNoti />
         </TouchableOpacity>
         <GestureView
-          onPress={() => onClickItem(data)}
+          onPress={() => onClickItem && onClickItem(data)}
           translate={translate}
           moveEventHandler={moveEventHandler}>
           <View style={styles.mainContainer}>

@@ -68,13 +68,13 @@ function SettingCommonRow({
         <TemplateText
           familyType="power"
           style={[styles.rowLabel, labelStyle || {}]}>
-          {label}
+          {label || ''}
         </TemplateText>
       </View>
       <View style={styles.options}>
         {value && (
           <TemplateText familyType="power" style={styles.rowValue}>
-            {value}
+            {value || ''}
           </TemplateText>
         )}
         {option && <RenderOption {...option} />}
